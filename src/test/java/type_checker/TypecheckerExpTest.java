@@ -1,10 +1,25 @@
 package type_checker;
 
-import type_checker_syntax.*;
+import type_checker.TypeErrorException;
+import type_checker.Typechecker;
+import type_checker_syntax.CharType;
+import type_checker_syntax.BinopExp;
+import type_checker_syntax.PlusOp;
+import type_checker_syntax.Exp;
+import type_checker_syntax.CastExp;
+import type_checker_syntax.CharExp;
+import type_checker_syntax.BoolType;
+import type_checker_syntax.EqualsOp;
+import type_checker_syntax.IntExp;
+import type_checker_syntax.Type;
+import type_checker_syntax.BoolExp;
+import type_checker_syntax.IntType;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import type_checker.TypeErrorException;
+import type_checker.Typechecker;
 
 // Tests for expressions that need no scopes.
 // This means:
@@ -32,19 +47,10 @@ public class TypecheckerExpTest {
                       new IntExp(42));
     }
 
-    
-
     @Test
     public void testBoolExp() {
         assertExpType(new BoolType(),
                       new BoolExp(true));
-    }
-
-    
-    @Test
-    public void testSizeof() {
-        assertExpType(new IntType(),
-                      new SizeofExp(new BoolType()));
     }
 
     @Test
@@ -55,7 +61,43 @@ public class TypecheckerExpTest {
                                    new IntExp(2)));
     }
 
-    
-    
-} // TypecheckerTest
+    @Test
+    public void testBinopPlusNonIntOrPointer() {
+        assertExpType(null,
+                      new BinopExp(new CharExp('a'),
+                                   new PlusOp(),
+                                   new IntExp(1)));
+    }
 
+    @Test
+    public void testEqualSameType() {
+        assertExpType(new BoolType(),
+                      new BinopExp(new CharExp('a'),
+                                   new EqualsOp(),
+                                   new CharExp('b')));
+    }
+
+    @Test
+    public void testEqualDifferentTypes() {
+        assertExpType(null,
+                      new BinopExp(new CharExp('a'),
+                                   new EqualsOp(),
+                                   new IntExp(1)));
+    }
+
+    @Test
+    public void testCastWellTypedSubexpression() {
+        assertExpType(new IntType(),
+                      new CastExp(new IntType(),
+                                  new CharExp('a')));
+    }
+
+    @Test
+    public void testCastIllTypedSubexpression() {
+        assertExpType(null,
+                      new CastExp(new CharType(),
+                                  new BinopExp(new IntExp(1),
+                                               new PlusOp(),
+                                               new CharExp('a'))));
+    }
+} // TypecheckerTest

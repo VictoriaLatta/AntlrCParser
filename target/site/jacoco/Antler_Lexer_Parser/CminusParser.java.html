@@ -1,0 +1,1719 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CminusParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CminusCompiler</a> &gt; <a href="index.source.html" class="el_package">Antler_Lexer_Parser</a> &gt; <span class="el_source">CminusParser.java</span></div><h1>CminusParser.java</h1><pre class="source lang-java linenums">package Antler_Lexer_Parser;
+
+// Generated from Cminus.g4 by ANTLR 4.7.2
+import org.antlr.v4.runtime.atn.*;
+import org.antlr.v4.runtime.dfa.DFA;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
+
+@SuppressWarnings({&quot;all&quot;, &quot;warnings&quot;, &quot;unchecked&quot;, &quot;unused&quot;, &quot;cast&quot;})
+public class CminusParser extends Parser {
+<span class="fc" id="L15">	static { RuntimeMetaData.checkVersion(&quot;4.7.2&quot;, RuntimeMetaData.VERSION); }</span>
+
+	protected static final DFA[] _decisionToDFA;
+<span class="fc" id="L18">	protected static final PredictionContextCache _sharedContextCache =</span>
+		new PredictionContextCache();
+	public static final int
+		TYPE=1, VOID=2, RETURN=3, POINTDEC=4, POINT=5, LEFTPAREN=6, RIGHTPAREN=7, 
+		Ifloop=8, Elseloop=9, Forloop=10, PRINT=11, MAIN=12, VAR=13, LEFTCURLY=14, 
+		RIGHTCURLY=15, PLUS=16, MINUS=17, MULT=18, DIVIDE=19, PLUSEQUAL=20, MINUSEQUAL=21, 
+		MULTEQUAL=22, DIVIDEQUAL=23, LESSTHAN=24, GREATERTHAN=25, LESSEQUAL=26, 
+		GREATEREQUAL=27, ASSIGN=28, ID=29, INT=30, COMMENT=31, WS=32, STRING=33, 
+		CHAR=34, NULLCHAR=35;
+	public static final int
+		RULE_startRule = 0, RULE_main = 1, RULE_progStatements = 2, RULE_statement = 3, 
+		RULE_funcPointerDec = 4, RULE_type = 5, RULE_funcCallParam = 6, RULE_funcPointer = 7, 
+		RULE_funcDecParam = 8, RULE_printStatement = 9, RULE_varDec = 10, RULE_varAssign = 11, 
+		RULE_var = 12, RULE_assignment = 13, RULE_mathExpr = 14, RULE_op = 15, 
+		RULE_exp = 16, RULE_assignOp = 17, RULE_loops = 18, RULE_ifConditions = 19, 
+		RULE_forConditions = 20, RULE_compare = 21, RULE_skip = 22;
+	private static String[] makeRuleNames() {
+<span class="fc" id="L35">		return new String[] {</span>
+			&quot;startRule&quot;, &quot;main&quot;, &quot;progStatements&quot;, &quot;statement&quot;, &quot;funcPointerDec&quot;, 
+			&quot;type&quot;, &quot;funcCallParam&quot;, &quot;funcPointer&quot;, &quot;funcDecParam&quot;, &quot;printStatement&quot;, 
+			&quot;varDec&quot;, &quot;varAssign&quot;, &quot;var&quot;, &quot;assignment&quot;, &quot;mathExpr&quot;, &quot;op&quot;, &quot;exp&quot;, 
+			&quot;assignOp&quot;, &quot;loops&quot;, &quot;ifConditions&quot;, &quot;forConditions&quot;, &quot;compare&quot;, &quot;skip&quot;
+		};
+	}
+<span class="fc" id="L42">	public static final String[] ruleNames = makeRuleNames();</span>
+
+	private static String[] makeLiteralNames() {
+<span class="fc" id="L45">		return new String[] {</span>
+			null, null, &quot;'void'&quot;, &quot;'return'&quot;, &quot;'&amp;'&quot;, &quot;'@'&quot;, &quot;'('&quot;, &quot;')'&quot;, &quot;'if'&quot;, 
+			&quot;'else'&quot;, &quot;'for'&quot;, &quot;'printf'&quot;, &quot;'main'&quot;, null, &quot;'{'&quot;, &quot;'}'&quot;, &quot;'+'&quot;, &quot;'-'&quot;, 
+			&quot;'*'&quot;, &quot;'/'&quot;, &quot;'+='&quot;, &quot;'-='&quot;, &quot;'*='&quot;, &quot;'/='&quot;, &quot;'&lt;'&quot;, &quot;'&gt;'&quot;, &quot;'&lt;='&quot;, &quot;'&gt;='&quot;, 
+			&quot;'='&quot;, null, null, null, null, null, null, &quot;';'&quot;
+		};
+	}
+<span class="fc" id="L52">	private static final String[] _LITERAL_NAMES = makeLiteralNames();</span>
+	private static String[] makeSymbolicNames() {
+<span class="fc" id="L54">		return new String[] {</span>
+			null, &quot;TYPE&quot;, &quot;VOID&quot;, &quot;RETURN&quot;, &quot;POINTDEC&quot;, &quot;POINT&quot;, &quot;LEFTPAREN&quot;, &quot;RIGHTPAREN&quot;, 
+			&quot;Ifloop&quot;, &quot;Elseloop&quot;, &quot;Forloop&quot;, &quot;PRINT&quot;, &quot;MAIN&quot;, &quot;VAR&quot;, &quot;LEFTCURLY&quot;, 
+			&quot;RIGHTCURLY&quot;, &quot;PLUS&quot;, &quot;MINUS&quot;, &quot;MULT&quot;, &quot;DIVIDE&quot;, &quot;PLUSEQUAL&quot;, &quot;MINUSEQUAL&quot;, 
+			&quot;MULTEQUAL&quot;, &quot;DIVIDEQUAL&quot;, &quot;LESSTHAN&quot;, &quot;GREATERTHAN&quot;, &quot;LESSEQUAL&quot;, &quot;GREATEREQUAL&quot;, 
+			&quot;ASSIGN&quot;, &quot;ID&quot;, &quot;INT&quot;, &quot;COMMENT&quot;, &quot;WS&quot;, &quot;STRING&quot;, &quot;CHAR&quot;, &quot;NULLCHAR&quot;
+		};
+	}
+<span class="fc" id="L62">	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();</span>
+<span class="fc" id="L63">	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);</span>
+
+	/**
+	 * @deprecated Use {@link #VOCABULARY} instead.
+	 */
+	@Deprecated
+	public static final String[] tokenNames;
+	static {
+<span class="fc" id="L71">		tokenNames = new String[_SYMBOLIC_NAMES.length];</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int i = 0; i &lt; tokenNames.length; i++) {</span>
+<span class="fc" id="L73">			tokenNames[i] = VOCABULARY.getLiteralName(i);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (tokenNames[i] == null) {</span>
+<span class="fc" id="L75">				tokenNames[i] = VOCABULARY.getSymbolicName(i);</span>
+			}
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (tokenNames[i] == null) {</span>
+<span class="fc" id="L79">				tokenNames[i] = &quot;&lt;INVALID&gt;&quot;;</span>
+			}
+		}
+	}
+
+	@Override
+	@Deprecated
+	public String[] getTokenNames() {
+<span class="nc" id="L87">		return tokenNames;</span>
+	}
+
+	@Override
+
+	public Vocabulary getVocabulary() {
+<span class="nc" id="L93">		return VOCABULARY;</span>
+	}
+
+	@Override
+<span class="nc" id="L97">	public String getGrammarFileName() { return &quot;Cminus.g4&quot;; }</span>
+
+	@Override
+<span class="fc" id="L100">	public String[] getRuleNames() { return ruleNames; }</span>
+
+	@Override
+<span class="nc" id="L103">	public String getSerializedATN() { return _serializedATN; }</span>
+
+	@Override
+<span class="fc" id="L106">	public ATN getATN() { return _ATN; }</span>
+
+	public CminusParser(TokenStream input) {
+<span class="fc" id="L109">		super(input);</span>
+<span class="fc" id="L110">		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);</span>
+<span class="fc" id="L111">	}</span>
+
+	public static class StartRuleContext extends ParserRuleContext {
+		public TypeContext type() {
+<span class="nc" id="L115">			return getRuleContext(TypeContext.class,0);</span>
+		}
+		public MainContext main() {
+<span class="nc" id="L118">			return getRuleContext(MainContext.class,0);</span>
+		}
+<span class="nc" id="L120">		public TerminalNode LEFTCURLY() { return getToken(CminusParser.LEFTCURLY, 0); }</span>
+		public ProgStatementsContext progStatements() {
+<span class="nc" id="L122">			return getRuleContext(ProgStatementsContext.class,0);</span>
+		}
+<span class="nc" id="L124">		public TerminalNode RIGHTCURLY() { return getToken(CminusParser.RIGHTCURLY, 0); }</span>
+<span class="nc" id="L125">		public TerminalNode EOF() { return getToken(CminusParser.EOF, 0); }</span>
+		public StartRuleContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L127">			super(parent, invokingState);</span>
+<span class="fc" id="L128">		}</span>
+<span class="fc" id="L129">		@Override public int getRuleIndex() { return RULE_startRule; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterStartRule(this);</span>
+<span class="nc" id="L133">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitStartRule(this);</span>
+<span class="nc" id="L137">		}</span>
+	}
+
+	public final StartRuleContext startRule() throws RecognitionException {
+<span class="fc" id="L141">		StartRuleContext _localctx = new StartRuleContext(_ctx, getState());</span>
+<span class="fc" id="L142">		enterRule(_localctx, 0, RULE_startRule);</span>
+		try {
+<span class="fc" id="L144">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L146">			setState(46);</span>
+<span class="fc" id="L147">			type();</span>
+<span class="fc" id="L148">			setState(47);</span>
+<span class="fc" id="L149">			main();</span>
+<span class="fc" id="L150">			setState(48);</span>
+<span class="fc" id="L151">			match(LEFTCURLY);</span>
+<span class="fc" id="L152">			setState(49);</span>
+<span class="fc" id="L153">			progStatements();</span>
+<span class="fc" id="L154">			setState(50);</span>
+<span class="fc" id="L155">			match(RIGHTCURLY);</span>
+<span class="fc" id="L156">			setState(51);</span>
+<span class="fc" id="L157">			match(EOF);</span>
+			}
+		}
+<span class="nc" id="L160">		catch (RecognitionException re) {</span>
+<span class="nc" id="L161">			_localctx.exception = re;</span>
+<span class="nc" id="L162">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L163">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L166">			exitRule();</span>
+		}
+<span class="fc" id="L168">		return _localctx;</span>
+	}
+
+	public static class MainContext extends ParserRuleContext {
+<span class="nc" id="L172">		public TerminalNode MAIN() { return getToken(CminusParser.MAIN, 0); }</span>
+		public MainContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L174">			super(parent, invokingState);</span>
+<span class="fc" id="L175">		}</span>
+<span class="fc" id="L176">		@Override public int getRuleIndex() { return RULE_main; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L179" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterMain(this);</span>
+<span class="nc" id="L180">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L183" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitMain(this);</span>
+<span class="nc" id="L184">		}</span>
+	}
+
+	public final MainContext main() throws RecognitionException {
+<span class="fc" id="L188">		MainContext _localctx = new MainContext(_ctx, getState());</span>
+<span class="fc" id="L189">		enterRule(_localctx, 2, RULE_main);</span>
+		try {
+<span class="fc" id="L191">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L193">			setState(53);</span>
+<span class="fc" id="L194">			match(MAIN);</span>
+			}
+		}
+<span class="nc" id="L197">		catch (RecognitionException re) {</span>
+<span class="nc" id="L198">			_localctx.exception = re;</span>
+<span class="nc" id="L199">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L200">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L203">			exitRule();</span>
+		}
+<span class="fc" id="L205">		return _localctx;</span>
+	}
+
+	public static class ProgStatementsContext extends ParserRuleContext {
+		public StatementContext statement() {
+<span class="nc" id="L210">			return getRuleContext(StatementContext.class,0);</span>
+		}
+		public ProgStatementsContext progStatements() {
+<span class="nc" id="L213">			return getRuleContext(ProgStatementsContext.class,0);</span>
+		}
+		public LoopsContext loops() {
+<span class="nc" id="L216">			return getRuleContext(LoopsContext.class,0);</span>
+		}
+		public ProgStatementsContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L219">			super(parent, invokingState);</span>
+<span class="fc" id="L220">		}</span>
+<span class="fc" id="L221">		@Override public int getRuleIndex() { return RULE_progStatements; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L224" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterProgStatements(this);</span>
+<span class="nc" id="L225">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitProgStatements(this);</span>
+<span class="nc" id="L229">		}</span>
+	}
+
+	public final ProgStatementsContext progStatements() throws RecognitionException {
+<span class="fc" id="L233">		ProgStatementsContext _localctx = new ProgStatementsContext(_ctx, getState());</span>
+<span class="fc" id="L234">		enterRule(_localctx, 4, RULE_progStatements);</span>
+		try {
+<span class="fc" id="L236">			setState(63);</span>
+<span class="fc" id="L237">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L238" title="2 of 5 branches missed.">			switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {</span>
+			case 1:
+<span class="fc" id="L240">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="fc" id="L242">				setState(55);</span>
+<span class="fc" id="L243">				statement();</span>
+				}
+<span class="fc" id="L245">				break;</span>
+			case 2:
+<span class="fc" id="L247">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="fc" id="L249">				setState(56);</span>
+<span class="fc" id="L250">				statement();</span>
+<span class="fc" id="L251">				setState(57);</span>
+<span class="fc" id="L252">				progStatements();</span>
+				}
+<span class="fc" id="L254">				break;</span>
+			case 3:
+<span class="fc" id="L256">				enterOuterAlt(_localctx, 3);</span>
+				{
+<span class="fc" id="L258">				setState(59);</span>
+<span class="fc" id="L259">				loops();</span>
+				}
+<span class="fc" id="L261">				break;</span>
+			case 4:
+<span class="nc" id="L263">				enterOuterAlt(_localctx, 4);</span>
+				{
+<span class="nc" id="L265">				setState(60);</span>
+<span class="nc" id="L266">				loops();</span>
+<span class="nc" id="L267">				setState(61);</span>
+<span class="nc" id="L268">				progStatements();</span>
+				}
+				break;
+			}
+		}
+<span class="nc" id="L273">		catch (RecognitionException re) {</span>
+<span class="nc" id="L274">			_localctx.exception = re;</span>
+<span class="nc" id="L275">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L276">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L279">			exitRule();</span>
+		}
+<span class="fc" id="L281">		return _localctx;</span>
+	}
+
+	public static class StatementContext extends ParserRuleContext {
+<span class="nc" id="L285">		public TerminalNode NULLCHAR() { return getToken(CminusParser.NULLCHAR, 0); }</span>
+		public VarDecContext varDec() {
+<span class="nc" id="L287">			return getRuleContext(VarDecContext.class,0);</span>
+		}
+		public VarAssignContext varAssign() {
+<span class="nc" id="L290">			return getRuleContext(VarAssignContext.class,0);</span>
+		}
+		public PrintStatementContext printStatement() {
+<span class="nc" id="L293">			return getRuleContext(PrintStatementContext.class,0);</span>
+		}
+		public FuncDecParamContext funcDecParam() {
+<span class="nc" id="L296">			return getRuleContext(FuncDecParamContext.class,0);</span>
+		}
+		public FuncCallParamContext funcCallParam() {
+<span class="nc" id="L299">			return getRuleContext(FuncCallParamContext.class,0);</span>
+		}
+		public FuncPointerDecContext funcPointerDec() {
+<span class="nc" id="L302">			return getRuleContext(FuncPointerDecContext.class,0);</span>
+		}
+		public StatementContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L305">			super(parent, invokingState);</span>
+<span class="fc" id="L306">		}</span>
+<span class="fc" id="L307">		@Override public int getRuleIndex() { return RULE_statement; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L310" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterStatement(this);</span>
+<span class="nc" id="L311">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L314" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitStatement(this);</span>
+<span class="nc" id="L315">		}</span>
+	}
+
+	public final StatementContext statement() throws RecognitionException {
+<span class="fc" id="L319">		StatementContext _localctx = new StatementContext(_ctx, getState());</span>
+<span class="fc" id="L320">		enterRule(_localctx, 6, RULE_statement);</span>
+		try {
+<span class="fc" id="L322">			setState(77);</span>
+<span class="fc" id="L323">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L324" title="4 of 6 branches missed.">			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {</span>
+			case 1:
+<span class="fc" id="L326">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="fc" id="L328">				setState(67);</span>
+<span class="fc" id="L329">				_errHandler.sync(this);</span>
+<span class="pc bpc" id="L330" title="1 of 3 branches missed.">				switch (_input.LA(1)) {</span>
+				case TYPE:
+					{
+<span class="fc" id="L333">					setState(65);</span>
+<span class="fc" id="L334">					varDec();</span>
+					}
+<span class="fc" id="L336">					break;</span>
+				case VAR:
+					{
+<span class="fc" id="L339">					setState(66);</span>
+<span class="fc" id="L340">					varAssign();</span>
+					}
+<span class="fc" id="L342">					break;</span>
+				default:
+<span class="nc" id="L344">					throw new NoViableAltException(this);</span>
+				}
+<span class="fc" id="L346">				setState(69);</span>
+<span class="fc" id="L347">				match(NULLCHAR);</span>
+				}
+<span class="fc" id="L349">				break;</span>
+			case 2:
+<span class="nc" id="L351">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="nc" id="L353">				setState(71);</span>
+<span class="nc" id="L354">				printStatement();</span>
+<span class="nc" id="L355">				setState(72);</span>
+<span class="nc" id="L356">				match(NULLCHAR);</span>
+				}
+<span class="nc" id="L358">				break;</span>
+			case 3:
+<span class="fc" id="L360">				enterOuterAlt(_localctx, 3);</span>
+				{
+<span class="fc" id="L362">				setState(74);</span>
+<span class="fc" id="L363">				funcDecParam();</span>
+				}
+<span class="fc" id="L365">				break;</span>
+			case 4:
+<span class="nc" id="L367">				enterOuterAlt(_localctx, 4);</span>
+				{
+<span class="nc" id="L369">				setState(75);</span>
+<span class="nc" id="L370">				funcCallParam();</span>
+				}
+<span class="nc" id="L372">				break;</span>
+			case 5:
+<span class="nc" id="L374">				enterOuterAlt(_localctx, 5);</span>
+				{
+<span class="nc" id="L376">				setState(76);</span>
+<span class="nc" id="L377">				funcPointerDec();</span>
+				}
+				break;
+			}
+		}
+<span class="nc" id="L382">		catch (RecognitionException re) {</span>
+<span class="nc" id="L383">			_localctx.exception = re;</span>
+<span class="nc" id="L384">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L385">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L388">			exitRule();</span>
+		}
+<span class="fc" id="L390">		return _localctx;</span>
+	}
+
+	public static class FuncPointerDecContext extends ParserRuleContext {
+		public List&lt;TypeContext&gt; type() {
+<span class="nc" id="L395">			return getRuleContexts(TypeContext.class);</span>
+		}
+		public TypeContext type(int i) {
+<span class="nc" id="L398">			return getRuleContext(TypeContext.class,i);</span>
+		}
+<span class="nc" id="L400">		public TerminalNode LEFTPAREN() { return getToken(CminusParser.LEFTPAREN, 0); }</span>
+<span class="nc" id="L401">		public TerminalNode POINTDEC() { return getToken(CminusParser.POINTDEC, 0); }</span>
+		public List&lt;VarContext&gt; var() {
+<span class="nc" id="L403">			return getRuleContexts(VarContext.class);</span>
+		}
+		public VarContext var(int i) {
+<span class="nc" id="L406">			return getRuleContext(VarContext.class,i);</span>
+		}
+<span class="nc" id="L408">		public TerminalNode RIGHTPAREN() { return getToken(CminusParser.RIGHTPAREN, 0); }</span>
+<span class="nc" id="L409">		public TerminalNode ASSIGN() { return getToken(CminusParser.ASSIGN, 0); }</span>
+<span class="nc" id="L410">		public TerminalNode POINT() { return getToken(CminusParser.POINT, 0); }</span>
+		public FuncPointerDecContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L412">			super(parent, invokingState);</span>
+<span class="nc" id="L413">		}</span>
+<span class="nc" id="L414">		@Override public int getRuleIndex() { return RULE_funcPointerDec; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L417" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterFuncPointerDec(this);</span>
+<span class="nc" id="L418">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L421" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitFuncPointerDec(this);</span>
+<span class="nc" id="L422">		}</span>
+	}
+
+	public final FuncPointerDecContext funcPointerDec() throws RecognitionException {
+<span class="nc" id="L426">		FuncPointerDecContext _localctx = new FuncPointerDecContext(_ctx, getState());</span>
+<span class="nc" id="L427">		enterRule(_localctx, 8, RULE_funcPointerDec);</span>
+		try {
+<span class="nc" id="L429">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="nc" id="L431">			setState(79);</span>
+<span class="nc" id="L432">			type();</span>
+<span class="nc" id="L433">			setState(80);</span>
+<span class="nc" id="L434">			match(LEFTPAREN);</span>
+<span class="nc" id="L435">			setState(81);</span>
+<span class="nc" id="L436">			match(POINTDEC);</span>
+<span class="nc" id="L437">			setState(82);</span>
+<span class="nc" id="L438">			var();</span>
+			{
+<span class="nc" id="L440">			setState(83);</span>
+<span class="nc" id="L441">			type();</span>
+			}
+<span class="nc" id="L443">			setState(84);</span>
+<span class="nc" id="L444">			match(RIGHTPAREN);</span>
+<span class="nc" id="L445">			setState(85);</span>
+<span class="nc" id="L446">			match(ASSIGN);</span>
+<span class="nc" id="L447">			setState(86);</span>
+<span class="nc" id="L448">			match(POINT);</span>
+<span class="nc" id="L449">			setState(87);</span>
+<span class="nc" id="L450">			var();</span>
+			}
+		}
+<span class="nc" id="L453">		catch (RecognitionException re) {</span>
+<span class="nc" id="L454">			_localctx.exception = re;</span>
+<span class="nc" id="L455">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L456">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L459">			exitRule();</span>
+		}
+<span class="nc" id="L461">		return _localctx;</span>
+	}
+
+	public static class TypeContext extends ParserRuleContext {
+<span class="nc" id="L465">		public TerminalNode TYPE() { return getToken(CminusParser.TYPE, 0); }</span>
+		public TypeContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L467">			super(parent, invokingState);</span>
+<span class="fc" id="L468">		}</span>
+<span class="fc" id="L469">		@Override public int getRuleIndex() { return RULE_type; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L472" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterType(this);</span>
+<span class="nc" id="L473">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L476" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitType(this);</span>
+<span class="nc" id="L477">		}</span>
+	}
+
+	public final TypeContext type() throws RecognitionException {
+<span class="fc" id="L481">		TypeContext _localctx = new TypeContext(_ctx, getState());</span>
+<span class="fc" id="L482">		enterRule(_localctx, 10, RULE_type);</span>
+		try {
+<span class="fc" id="L484">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L486">			setState(89);</span>
+<span class="fc" id="L487">			match(TYPE);</span>
+			}
+		}
+<span class="nc" id="L490">		catch (RecognitionException re) {</span>
+<span class="nc" id="L491">			_localctx.exception = re;</span>
+<span class="nc" id="L492">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L493">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L496">			exitRule();</span>
+		}
+<span class="fc" id="L498">		return _localctx;</span>
+	}
+
+	public static class FuncCallParamContext extends ParserRuleContext {
+		public List&lt;VarContext&gt; var() {
+<span class="nc" id="L503">			return getRuleContexts(VarContext.class);</span>
+		}
+		public VarContext var(int i) {
+<span class="nc" id="L506">			return getRuleContext(VarContext.class,i);</span>
+		}
+<span class="nc" id="L508">		public TerminalNode LEFTPAREN() { return getToken(CminusParser.LEFTPAREN, 0); }</span>
+		public TypeContext type() {
+<span class="nc" id="L510">			return getRuleContext(TypeContext.class,0);</span>
+		}
+<span class="nc" id="L512">		public TerminalNode RIGHTPAREN() { return getToken(CminusParser.RIGHTPAREN, 0); }</span>
+		public FuncPointerContext funcPointer() {
+<span class="nc" id="L514">			return getRuleContext(FuncPointerContext.class,0);</span>
+		}
+		public FuncCallParamContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L517">			super(parent, invokingState);</span>
+<span class="nc" id="L518">		}</span>
+<span class="nc" id="L519">		@Override public int getRuleIndex() { return RULE_funcCallParam; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L522" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterFuncCallParam(this);</span>
+<span class="nc" id="L523">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L526" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitFuncCallParam(this);</span>
+<span class="nc" id="L527">		}</span>
+	}
+
+	public final FuncCallParamContext funcCallParam() throws RecognitionException {
+<span class="nc" id="L531">		FuncCallParamContext _localctx = new FuncCallParamContext(_ctx, getState());</span>
+<span class="nc" id="L532">		enterRule(_localctx, 12, RULE_funcCallParam);</span>
+		try {
+<span class="nc" id="L534">			setState(98);</span>
+<span class="nc" id="L535">			_errHandler.sync(this);</span>
+<span class="nc bnc" id="L536" title="All 3 branches missed.">			switch (_input.LA(1)) {</span>
+			case VAR:
+<span class="nc" id="L538">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="nc" id="L540">				setState(91);</span>
+<span class="nc" id="L541">				var();</span>
+<span class="nc" id="L542">				setState(92);</span>
+<span class="nc" id="L543">				match(LEFTPAREN);</span>
+<span class="nc" id="L544">				setState(93);</span>
+<span class="nc" id="L545">				type();</span>
+<span class="nc" id="L546">				setState(94);</span>
+<span class="nc" id="L547">				var();</span>
+<span class="nc" id="L548">				setState(95);</span>
+<span class="nc" id="L549">				match(RIGHTPAREN);</span>
+				}
+<span class="nc" id="L551">				break;</span>
+			case POINTDEC:
+<span class="nc" id="L553">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="nc" id="L555">				setState(97);</span>
+<span class="nc" id="L556">				funcPointer();</span>
+				}
+<span class="nc" id="L558">				break;</span>
+			default:
+<span class="nc" id="L560">				throw new NoViableAltException(this);</span>
+			}
+		}
+<span class="nc" id="L563">		catch (RecognitionException re) {</span>
+<span class="nc" id="L564">			_localctx.exception = re;</span>
+<span class="nc" id="L565">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L566">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L569">			exitRule();</span>
+		}
+<span class="nc" id="L571">		return _localctx;</span>
+	}
+
+	public static class FuncPointerContext extends ParserRuleContext {
+<span class="nc" id="L575">		public TerminalNode POINTDEC() { return getToken(CminusParser.POINTDEC, 0); }</span>
+		public List&lt;VarContext&gt; var() {
+<span class="nc" id="L577">			return getRuleContexts(VarContext.class);</span>
+		}
+		public VarContext var(int i) {
+<span class="nc" id="L580">			return getRuleContext(VarContext.class,i);</span>
+		}
+<span class="nc" id="L582">		public TerminalNode LEFTPAREN() { return getToken(CminusParser.LEFTPAREN, 0); }</span>
+		public TypeContext type() {
+<span class="nc" id="L584">			return getRuleContext(TypeContext.class,0);</span>
+		}
+<span class="nc" id="L586">		public TerminalNode RIGHTPAREN() { return getToken(CminusParser.RIGHTPAREN, 0); }</span>
+		public ExpContext exp() {
+<span class="nc" id="L588">			return getRuleContext(ExpContext.class,0);</span>
+		}
+		public FuncPointerContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L591">			super(parent, invokingState);</span>
+<span class="nc" id="L592">		}</span>
+<span class="nc" id="L593">		@Override public int getRuleIndex() { return RULE_funcPointer; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L596" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterFuncPointer(this);</span>
+<span class="nc" id="L597">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L600" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitFuncPointer(this);</span>
+<span class="nc" id="L601">		}</span>
+	}
+
+	public final FuncPointerContext funcPointer() throws RecognitionException {
+<span class="nc" id="L605">		FuncPointerContext _localctx = new FuncPointerContext(_ctx, getState());</span>
+<span class="nc" id="L606">		enterRule(_localctx, 14, RULE_funcPointer);</span>
+		try {
+<span class="nc" id="L608">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="nc" id="L610">			setState(100);</span>
+<span class="nc" id="L611">			match(POINTDEC);</span>
+<span class="nc" id="L612">			setState(101);</span>
+<span class="nc" id="L613">			var();</span>
+<span class="nc" id="L614">			setState(102);</span>
+<span class="nc" id="L615">			match(LEFTPAREN);</span>
+<span class="nc" id="L616">			setState(103);</span>
+<span class="nc" id="L617">			type();</span>
+<span class="nc" id="L618">			setState(106);</span>
+<span class="nc" id="L619">			_errHandler.sync(this);</span>
+<span class="nc bnc" id="L620" title="All 3 branches missed.">			switch (_input.LA(1)) {</span>
+			case VAR:
+				{
+<span class="nc" id="L623">				setState(104);</span>
+<span class="nc" id="L624">				var();</span>
+				}
+<span class="nc" id="L626">				break;</span>
+			case INT:
+			case CHAR:
+				{
+<span class="nc" id="L630">				setState(105);</span>
+<span class="nc" id="L631">				exp();</span>
+				}
+<span class="nc" id="L633">				break;</span>
+			default:
+<span class="nc" id="L635">				throw new NoViableAltException(this);</span>
+			}
+<span class="nc" id="L637">			setState(108);</span>
+<span class="nc" id="L638">			match(RIGHTPAREN);</span>
+			}
+		}
+<span class="nc" id="L641">		catch (RecognitionException re) {</span>
+<span class="nc" id="L642">			_localctx.exception = re;</span>
+<span class="nc" id="L643">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L644">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L647">			exitRule();</span>
+		}
+<span class="nc" id="L649">		return _localctx;</span>
+	}
+
+	public static class FuncDecParamContext extends ParserRuleContext {
+		public List&lt;TypeContext&gt; type() {
+<span class="nc" id="L654">			return getRuleContexts(TypeContext.class);</span>
+		}
+		public TypeContext type(int i) {
+<span class="nc" id="L657">			return getRuleContext(TypeContext.class,i);</span>
+		}
+		public List&lt;VarContext&gt; var() {
+<span class="nc" id="L660">			return getRuleContexts(VarContext.class);</span>
+		}
+		public VarContext var(int i) {
+<span class="nc" id="L663">			return getRuleContext(VarContext.class,i);</span>
+		}
+<span class="nc" id="L665">		public TerminalNode LEFTPAREN() { return getToken(CminusParser.LEFTPAREN, 0); }</span>
+<span class="nc" id="L666">		public TerminalNode RIGHTPAREN() { return getToken(CminusParser.RIGHTPAREN, 0); }</span>
+<span class="nc" id="L667">		public TerminalNode LEFTCURLY() { return getToken(CminusParser.LEFTCURLY, 0); }</span>
+		public ProgStatementsContext progStatements() {
+<span class="nc" id="L669">			return getRuleContext(ProgStatementsContext.class,0);</span>
+		}
+<span class="nc" id="L671">		public TerminalNode RETURN() { return getToken(CminusParser.RETURN, 0); }</span>
+<span class="nc" id="L672">		public TerminalNode NULLCHAR() { return getToken(CminusParser.NULLCHAR, 0); }</span>
+<span class="nc" id="L673">		public TerminalNode RIGHTCURLY() { return getToken(CminusParser.RIGHTCURLY, 0); }</span>
+		public List&lt;ExpContext&gt; exp() {
+<span class="nc" id="L675">			return getRuleContexts(ExpContext.class);</span>
+		}
+		public ExpContext exp(int i) {
+<span class="nc" id="L678">			return getRuleContext(ExpContext.class,i);</span>
+		}
+		public FuncPointerContext funcPointer() {
+<span class="nc" id="L681">			return getRuleContext(FuncPointerContext.class,0);</span>
+		}
+<span class="nc" id="L683">		public TerminalNode VOID() { return getToken(CminusParser.VOID, 0); }</span>
+		public FuncDecParamContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L685">			super(parent, invokingState);</span>
+<span class="fc" id="L686">		}</span>
+<span class="fc" id="L687">		@Override public int getRuleIndex() { return RULE_funcDecParam; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L690" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterFuncDecParam(this);</span>
+<span class="nc" id="L691">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L694" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitFuncDecParam(this);</span>
+<span class="nc" id="L695">		}</span>
+	}
+
+	public final FuncDecParamContext funcDecParam() throws RecognitionException {
+<span class="fc" id="L699">		FuncDecParamContext _localctx = new FuncDecParamContext(_ctx, getState());</span>
+<span class="fc" id="L700">		enterRule(_localctx, 16, RULE_funcDecParam);</span>
+		try {
+<span class="fc" id="L702">			setState(143);</span>
+<span class="fc" id="L703">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L704" title="2 of 3 branches missed.">			switch (_input.LA(1)) {</span>
+			case TYPE:
+<span class="fc" id="L706">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="fc" id="L708">				setState(110);</span>
+<span class="fc" id="L709">				type();</span>
+<span class="fc" id="L710">				setState(111);</span>
+<span class="fc" id="L711">				var();</span>
+<span class="fc" id="L712">				setState(112);</span>
+<span class="fc" id="L713">				match(LEFTPAREN);</span>
+<span class="fc" id="L714">				setState(113);</span>
+<span class="fc" id="L715">				type();</span>
+<span class="fc" id="L716">				setState(116);</span>
+<span class="fc" id="L717">				_errHandler.sync(this);</span>
+<span class="pc bpc" id="L718" title="2 of 3 branches missed.">				switch (_input.LA(1)) {</span>
+				case VAR:
+					{
+<span class="fc" id="L721">					setState(114);</span>
+<span class="fc" id="L722">					var();</span>
+					}
+<span class="fc" id="L724">					break;</span>
+				case INT:
+				case CHAR:
+					{
+<span class="nc" id="L728">					setState(115);</span>
+<span class="nc" id="L729">					exp();</span>
+					}
+<span class="nc" id="L731">					break;</span>
+				default:
+<span class="nc" id="L733">					throw new NoViableAltException(this);</span>
+				}
+<span class="fc" id="L735">				setState(118);</span>
+<span class="fc" id="L736">				match(RIGHTPAREN);</span>
+<span class="fc" id="L737">				setState(119);</span>
+<span class="fc" id="L738">				match(LEFTCURLY);</span>
+<span class="fc" id="L739">				setState(120);</span>
+<span class="fc" id="L740">				progStatements();</span>
+<span class="fc" id="L741">				setState(121);</span>
+<span class="fc" id="L742">				match(RETURN);</span>
+<span class="fc" id="L743">				setState(125);</span>
+<span class="fc" id="L744">				_errHandler.sync(this);</span>
+<span class="pc bpc" id="L745" title="3 of 4 branches missed.">				switch (_input.LA(1)) {</span>
+				case VAR:
+					{
+<span class="fc" id="L748">					setState(122);</span>
+<span class="fc" id="L749">					var();</span>
+					}
+<span class="fc" id="L751">					break;</span>
+				case INT:
+				case CHAR:
+					{
+<span class="nc" id="L755">					setState(123);</span>
+<span class="nc" id="L756">					exp();</span>
+					}
+<span class="nc" id="L758">					break;</span>
+				case POINTDEC:
+					{
+<span class="nc" id="L761">					setState(124);</span>
+<span class="nc" id="L762">					funcPointer();</span>
+					}
+<span class="nc" id="L764">					break;</span>
+				default:
+<span class="nc" id="L766">					throw new NoViableAltException(this);</span>
+				}
+<span class="fc" id="L768">				setState(127);</span>
+<span class="fc" id="L769">				match(NULLCHAR);</span>
+<span class="fc" id="L770">				setState(128);</span>
+<span class="fc" id="L771">				match(RIGHTCURLY);</span>
+				}
+<span class="fc" id="L773">				break;</span>
+			case VOID:
+<span class="nc" id="L775">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="nc" id="L777">				setState(130);</span>
+<span class="nc" id="L778">				match(VOID);</span>
+<span class="nc" id="L779">				setState(131);</span>
+<span class="nc" id="L780">				var();</span>
+<span class="nc" id="L781">				setState(132);</span>
+<span class="nc" id="L782">				match(LEFTPAREN);</span>
+<span class="nc" id="L783">				setState(133);</span>
+<span class="nc" id="L784">				type();</span>
+<span class="nc" id="L785">				setState(136);</span>
+<span class="nc" id="L786">				_errHandler.sync(this);</span>
+<span class="nc bnc" id="L787" title="All 3 branches missed.">				switch (_input.LA(1)) {</span>
+				case VAR:
+					{
+<span class="nc" id="L790">					setState(134);</span>
+<span class="nc" id="L791">					var();</span>
+					}
+<span class="nc" id="L793">					break;</span>
+				case INT:
+				case CHAR:
+					{
+<span class="nc" id="L797">					setState(135);</span>
+<span class="nc" id="L798">					exp();</span>
+					}
+<span class="nc" id="L800">					break;</span>
+				default:
+<span class="nc" id="L802">					throw new NoViableAltException(this);</span>
+				}
+<span class="nc" id="L804">				setState(138);</span>
+<span class="nc" id="L805">				match(RIGHTPAREN);</span>
+<span class="nc" id="L806">				setState(139);</span>
+<span class="nc" id="L807">				match(LEFTCURLY);</span>
+<span class="nc" id="L808">				setState(140);</span>
+<span class="nc" id="L809">				progStatements();</span>
+<span class="nc" id="L810">				setState(141);</span>
+<span class="nc" id="L811">				match(RIGHTCURLY);</span>
+				}
+<span class="nc" id="L813">				break;</span>
+			default:
+<span class="nc" id="L815">				throw new NoViableAltException(this);</span>
+			}
+		}
+<span class="nc" id="L818">		catch (RecognitionException re) {</span>
+<span class="nc" id="L819">			_localctx.exception = re;</span>
+<span class="nc" id="L820">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L821">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L824">			exitRule();</span>
+		}
+<span class="fc" id="L826">		return _localctx;</span>
+	}
+
+	public static class PrintStatementContext extends ParserRuleContext {
+<span class="nc" id="L830">		public TerminalNode PRINT() { return getToken(CminusParser.PRINT, 0); }</span>
+<span class="nc" id="L831">		public TerminalNode LEFTPAREN() { return getToken(CminusParser.LEFTPAREN, 0); }</span>
+<span class="nc" id="L832">		public TerminalNode STRING() { return getToken(CminusParser.STRING, 0); }</span>
+<span class="nc" id="L833">		public TerminalNode RIGHTPAREN() { return getToken(CminusParser.RIGHTPAREN, 0); }</span>
+		public PrintStatementContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L835">			super(parent, invokingState);</span>
+<span class="nc" id="L836">		}</span>
+<span class="nc" id="L837">		@Override public int getRuleIndex() { return RULE_printStatement; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L840" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterPrintStatement(this);</span>
+<span class="nc" id="L841">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L844" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitPrintStatement(this);</span>
+<span class="nc" id="L845">		}</span>
+	}
+
+	public final PrintStatementContext printStatement() throws RecognitionException {
+<span class="nc" id="L849">		PrintStatementContext _localctx = new PrintStatementContext(_ctx, getState());</span>
+<span class="nc" id="L850">		enterRule(_localctx, 18, RULE_printStatement);</span>
+		try {
+<span class="nc" id="L852">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="nc" id="L854">			setState(145);</span>
+<span class="nc" id="L855">			match(PRINT);</span>
+<span class="nc" id="L856">			setState(146);</span>
+<span class="nc" id="L857">			match(LEFTPAREN);</span>
+<span class="nc" id="L858">			setState(147);</span>
+<span class="nc" id="L859">			match(STRING);</span>
+<span class="nc" id="L860">			setState(148);</span>
+<span class="nc" id="L861">			match(RIGHTPAREN);</span>
+			}
+		}
+<span class="nc" id="L864">		catch (RecognitionException re) {</span>
+<span class="nc" id="L865">			_localctx.exception = re;</span>
+<span class="nc" id="L866">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L867">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L870">			exitRule();</span>
+		}
+<span class="nc" id="L872">		return _localctx;</span>
+	}
+
+	public static class VarDecContext extends ParserRuleContext {
+		public TypeContext type() {
+<span class="nc" id="L877">			return getRuleContext(TypeContext.class,0);</span>
+		}
+		public VarContext var() {
+<span class="nc" id="L880">			return getRuleContext(VarContext.class,0);</span>
+		}
+		public AssignmentContext assignment() {
+<span class="nc" id="L883">			return getRuleContext(AssignmentContext.class,0);</span>
+		}
+		public MathExprContext mathExpr() {
+<span class="nc" id="L886">			return getRuleContext(MathExprContext.class,0);</span>
+		}
+		public VarDecContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L889">			super(parent, invokingState);</span>
+<span class="fc" id="L890">		}</span>
+<span class="fc" id="L891">		@Override public int getRuleIndex() { return RULE_varDec; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L894" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterVarDec(this);</span>
+<span class="nc" id="L895">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L898" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitVarDec(this);</span>
+<span class="nc" id="L899">		}</span>
+	}
+
+	public final VarDecContext varDec() throws RecognitionException {
+<span class="fc" id="L903">		VarDecContext _localctx = new VarDecContext(_ctx, getState());</span>
+<span class="fc" id="L904">		enterRule(_localctx, 20, RULE_varDec);</span>
+		try {
+<span class="fc" id="L906">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L908">			setState(150);</span>
+<span class="fc" id="L909">			type();</span>
+<span class="fc" id="L910">			setState(151);</span>
+<span class="fc" id="L911">			var();</span>
+<span class="fc" id="L912">			setState(152);</span>
+<span class="fc" id="L913">			assignment();</span>
+<span class="fc" id="L914">			setState(153);</span>
+<span class="fc" id="L915">			mathExpr();</span>
+			}
+		}
+<span class="nc" id="L918">		catch (RecognitionException re) {</span>
+<span class="nc" id="L919">			_localctx.exception = re;</span>
+<span class="nc" id="L920">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L921">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L924">			exitRule();</span>
+		}
+<span class="fc" id="L926">		return _localctx;</span>
+	}
+
+	public static class VarAssignContext extends ParserRuleContext {
+		public VarContext var() {
+<span class="nc" id="L931">			return getRuleContext(VarContext.class,0);</span>
+		}
+		public AssignmentContext assignment() {
+<span class="nc" id="L934">			return getRuleContext(AssignmentContext.class,0);</span>
+		}
+		public MathExprContext mathExpr() {
+<span class="nc" id="L937">			return getRuleContext(MathExprContext.class,0);</span>
+		}
+		public VarAssignContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L940">			super(parent, invokingState);</span>
+<span class="fc" id="L941">		}</span>
+<span class="fc" id="L942">		@Override public int getRuleIndex() { return RULE_varAssign; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L945" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterVarAssign(this);</span>
+<span class="nc" id="L946">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L949" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitVarAssign(this);</span>
+<span class="nc" id="L950">		}</span>
+	}
+
+	public final VarAssignContext varAssign() throws RecognitionException {
+<span class="fc" id="L954">		VarAssignContext _localctx = new VarAssignContext(_ctx, getState());</span>
+<span class="fc" id="L955">		enterRule(_localctx, 22, RULE_varAssign);</span>
+		try {
+<span class="fc" id="L957">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L959">			setState(155);</span>
+<span class="fc" id="L960">			var();</span>
+<span class="fc" id="L961">			setState(156);</span>
+<span class="fc" id="L962">			assignment();</span>
+<span class="fc" id="L963">			setState(157);</span>
+<span class="fc" id="L964">			mathExpr();</span>
+			}
+		}
+<span class="nc" id="L967">		catch (RecognitionException re) {</span>
+<span class="nc" id="L968">			_localctx.exception = re;</span>
+<span class="nc" id="L969">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L970">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L973">			exitRule();</span>
+		}
+<span class="fc" id="L975">		return _localctx;</span>
+	}
+
+	public static class VarContext extends ParserRuleContext {
+<span class="nc" id="L979">		public TerminalNode VAR() { return getToken(CminusParser.VAR, 0); }</span>
+		public VarContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L981">			super(parent, invokingState);</span>
+<span class="fc" id="L982">		}</span>
+<span class="fc" id="L983">		@Override public int getRuleIndex() { return RULE_var; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L986" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterVar(this);</span>
+<span class="nc" id="L987">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L990" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitVar(this);</span>
+<span class="nc" id="L991">		}</span>
+	}
+
+	public final VarContext var() throws RecognitionException {
+<span class="fc" id="L995">		VarContext _localctx = new VarContext(_ctx, getState());</span>
+<span class="fc" id="L996">		enterRule(_localctx, 24, RULE_var);</span>
+		try {
+<span class="fc" id="L998">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L1000">			setState(159);</span>
+<span class="fc" id="L1001">			match(VAR);</span>
+			}
+		}
+<span class="nc" id="L1004">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1005">			_localctx.exception = re;</span>
+<span class="nc" id="L1006">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1007">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1010">			exitRule();</span>
+		}
+<span class="fc" id="L1012">		return _localctx;</span>
+	}
+
+	public static class AssignmentContext extends ParserRuleContext {
+<span class="nc" id="L1016">		public TerminalNode ASSIGN() { return getToken(CminusParser.ASSIGN, 0); }</span>
+		public AssignOpContext assignOp() {
+<span class="nc" id="L1018">			return getRuleContext(AssignOpContext.class,0);</span>
+		}
+		public AssignmentContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L1021">			super(parent, invokingState);</span>
+<span class="fc" id="L1022">		}</span>
+<span class="fc" id="L1023">		@Override public int getRuleIndex() { return RULE_assignment; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1026" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterAssignment(this);</span>
+<span class="nc" id="L1027">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1030" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitAssignment(this);</span>
+<span class="nc" id="L1031">		}</span>
+	}
+
+	public final AssignmentContext assignment() throws RecognitionException {
+<span class="fc" id="L1035">		AssignmentContext _localctx = new AssignmentContext(_ctx, getState());</span>
+<span class="fc" id="L1036">		enterRule(_localctx, 26, RULE_assignment);</span>
+		try {
+<span class="fc" id="L1038">			setState(163);</span>
+<span class="fc" id="L1039">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L1040" title="2 of 3 branches missed.">			switch (_input.LA(1)) {</span>
+			case ASSIGN:
+<span class="fc" id="L1042">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="fc" id="L1044">				setState(161);</span>
+<span class="fc" id="L1045">				match(ASSIGN);</span>
+				}
+<span class="fc" id="L1047">				break;</span>
+			case PLUSEQUAL:
+			case MINUSEQUAL:
+			case MULTEQUAL:
+			case DIVIDEQUAL:
+<span class="nc" id="L1052">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="nc" id="L1054">				setState(162);</span>
+<span class="nc" id="L1055">				assignOp();</span>
+				}
+<span class="nc" id="L1057">				break;</span>
+			default:
+<span class="nc" id="L1059">				throw new NoViableAltException(this);</span>
+			}
+		}
+<span class="nc" id="L1062">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1063">			_localctx.exception = re;</span>
+<span class="nc" id="L1064">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1065">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1068">			exitRule();</span>
+		}
+<span class="fc" id="L1070">		return _localctx;</span>
+	}
+
+	public static class MathExprContext extends ParserRuleContext {
+		public List&lt;ExpContext&gt; exp() {
+<span class="nc" id="L1075">			return getRuleContexts(ExpContext.class);</span>
+		}
+		public ExpContext exp(int i) {
+<span class="nc" id="L1078">			return getRuleContext(ExpContext.class,i);</span>
+		}
+		public OpContext op() {
+<span class="nc" id="L1081">			return getRuleContext(OpContext.class,0);</span>
+		}
+		public VarContext var() {
+<span class="nc" id="L1084">			return getRuleContext(VarContext.class,0);</span>
+		}
+		public MathExprContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L1087">			super(parent, invokingState);</span>
+<span class="fc" id="L1088">		}</span>
+<span class="fc" id="L1089">		@Override public int getRuleIndex() { return RULE_mathExpr; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1092" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterMathExpr(this);</span>
+<span class="nc" id="L1093">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1096" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitMathExpr(this);</span>
+<span class="nc" id="L1097">		}</span>
+	}
+
+	public final MathExprContext mathExpr() throws RecognitionException {
+<span class="fc" id="L1101">		MathExprContext _localctx = new MathExprContext(_ctx, getState());</span>
+<span class="fc" id="L1102">		enterRule(_localctx, 28, RULE_mathExpr);</span>
+		try {
+<span class="fc" id="L1104">			setState(179);</span>
+<span class="fc" id="L1105">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L1106" title="4 of 6 branches missed.">			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {</span>
+			case 1:
+<span class="fc" id="L1108">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="fc" id="L1110">				setState(165);</span>
+<span class="fc" id="L1111">				exp();</span>
+				}
+<span class="fc" id="L1113">				break;</span>
+			case 2:
+<span class="nc" id="L1115">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="nc" id="L1117">				setState(166);</span>
+<span class="nc" id="L1118">				exp();</span>
+<span class="nc" id="L1119">				setState(167);</span>
+<span class="nc" id="L1120">				op();</span>
+<span class="nc" id="L1121">				setState(168);</span>
+<span class="nc" id="L1122">				exp();</span>
+				}
+<span class="nc" id="L1124">				break;</span>
+			case 3:
+<span class="nc" id="L1126">				enterOuterAlt(_localctx, 3);</span>
+				{
+<span class="nc" id="L1128">				setState(170);</span>
+<span class="nc" id="L1129">				var();</span>
+<span class="nc" id="L1130">				setState(171);</span>
+<span class="nc" id="L1131">				op();</span>
+<span class="nc" id="L1132">				setState(172);</span>
+<span class="nc" id="L1133">				exp();</span>
+				}
+<span class="nc" id="L1135">				break;</span>
+			case 4:
+<span class="nc" id="L1137">				enterOuterAlt(_localctx, 4);</span>
+				{
+<span class="nc" id="L1139">				setState(174);</span>
+<span class="nc" id="L1140">				exp();</span>
+<span class="nc" id="L1141">				setState(175);</span>
+<span class="nc" id="L1142">				op();</span>
+<span class="nc" id="L1143">				setState(176);</span>
+<span class="nc" id="L1144">				var();</span>
+				}
+<span class="nc" id="L1146">				break;</span>
+			case 5:
+<span class="fc" id="L1148">				enterOuterAlt(_localctx, 5);</span>
+				{
+<span class="fc" id="L1150">				setState(178);</span>
+<span class="fc" id="L1151">				var();</span>
+				}
+				break;
+			}
+		}
+<span class="nc" id="L1156">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1157">			_localctx.exception = re;</span>
+<span class="nc" id="L1158">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1159">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1162">			exitRule();</span>
+		}
+<span class="fc" id="L1164">		return _localctx;</span>
+	}
+
+	public static class OpContext extends ParserRuleContext {
+<span class="nc" id="L1168">		public TerminalNode PLUS() { return getToken(CminusParser.PLUS, 0); }</span>
+<span class="nc" id="L1169">		public TerminalNode MINUS() { return getToken(CminusParser.MINUS, 0); }</span>
+<span class="nc" id="L1170">		public TerminalNode DIVIDE() { return getToken(CminusParser.DIVIDE, 0); }</span>
+<span class="nc" id="L1171">		public TerminalNode MULT() { return getToken(CminusParser.MULT, 0); }</span>
+		public OpContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L1173">			super(parent, invokingState);</span>
+<span class="nc" id="L1174">		}</span>
+<span class="nc" id="L1175">		@Override public int getRuleIndex() { return RULE_op; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1178" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterOp(this);</span>
+<span class="nc" id="L1179">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1182" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitOp(this);</span>
+<span class="nc" id="L1183">		}</span>
+	}
+
+	public final OpContext op() throws RecognitionException {
+<span class="nc" id="L1187">		OpContext _localctx = new OpContext(_ctx, getState());</span>
+<span class="nc" id="L1188">		enterRule(_localctx, 30, RULE_op);</span>
+		int _la;
+		try {
+<span class="nc" id="L1191">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="nc" id="L1193">			setState(181);</span>
+<span class="nc" id="L1194">			_la = _input.LA(1);</span>
+<span class="nc bnc" id="L1195" title="All 4 branches missed.">			if ( !((((_la) &amp; ~0x3f) == 0 &amp;&amp; ((1L &lt;&lt; _la) &amp; ((1L &lt;&lt; PLUS) | (1L &lt;&lt; MINUS) | (1L &lt;&lt; MULT) | (1L &lt;&lt; DIVIDE))) != 0)) ) {</span>
+<span class="nc" id="L1196">			_errHandler.recoverInline(this);</span>
+			}
+			else {
+<span class="nc bnc" id="L1199" title="All 2 branches missed.">				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;</span>
+<span class="nc" id="L1200">				_errHandler.reportMatch(this);</span>
+<span class="nc" id="L1201">				consume();</span>
+			}
+			}
+		}
+<span class="nc" id="L1205">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1206">			_localctx.exception = re;</span>
+<span class="nc" id="L1207">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1208">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L1211">			exitRule();</span>
+		}
+<span class="nc" id="L1213">		return _localctx;</span>
+	}
+
+	public static class ExpContext extends ParserRuleContext {
+<span class="nc" id="L1217">		public TerminalNode INT() { return getToken(CminusParser.INT, 0); }</span>
+<span class="nc" id="L1218">		public TerminalNode CHAR() { return getToken(CminusParser.CHAR, 0); }</span>
+		public ExpContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L1220">			super(parent, invokingState);</span>
+<span class="fc" id="L1221">		}</span>
+<span class="fc" id="L1222">		@Override public int getRuleIndex() { return RULE_exp; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1225" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterExp(this);</span>
+<span class="nc" id="L1226">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1229" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitExp(this);</span>
+<span class="nc" id="L1230">		}</span>
+	}
+
+	public final ExpContext exp() throws RecognitionException {
+<span class="fc" id="L1234">		ExpContext _localctx = new ExpContext(_ctx, getState());</span>
+<span class="fc" id="L1235">		enterRule(_localctx, 32, RULE_exp);</span>
+		int _la;
+		try {
+<span class="fc" id="L1238">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L1240">			setState(183);</span>
+<span class="fc" id="L1241">			_la = _input.LA(1);</span>
+<span class="pc bpc" id="L1242" title="3 of 4 branches missed.">			if ( !(_la==INT || _la==CHAR) ) {</span>
+<span class="nc" id="L1243">			_errHandler.recoverInline(this);</span>
+			}
+			else {
+<span class="pc bpc" id="L1246" title="1 of 2 branches missed.">				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;</span>
+<span class="fc" id="L1247">				_errHandler.reportMatch(this);</span>
+<span class="fc" id="L1248">				consume();</span>
+			}
+			}
+		}
+<span class="nc" id="L1252">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1253">			_localctx.exception = re;</span>
+<span class="nc" id="L1254">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1255">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1258">			exitRule();</span>
+		}
+<span class="fc" id="L1260">		return _localctx;</span>
+	}
+
+	public static class AssignOpContext extends ParserRuleContext {
+<span class="nc" id="L1264">		public TerminalNode PLUSEQUAL() { return getToken(CminusParser.PLUSEQUAL, 0); }</span>
+<span class="nc" id="L1265">		public TerminalNode MINUSEQUAL() { return getToken(CminusParser.MINUSEQUAL, 0); }</span>
+<span class="nc" id="L1266">		public TerminalNode MULTEQUAL() { return getToken(CminusParser.MULTEQUAL, 0); }</span>
+<span class="nc" id="L1267">		public TerminalNode DIVIDEQUAL() { return getToken(CminusParser.DIVIDEQUAL, 0); }</span>
+		public AssignOpContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L1269">			super(parent, invokingState);</span>
+<span class="nc" id="L1270">		}</span>
+<span class="nc" id="L1271">		@Override public int getRuleIndex() { return RULE_assignOp; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1274" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterAssignOp(this);</span>
+<span class="nc" id="L1275">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1278" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitAssignOp(this);</span>
+<span class="nc" id="L1279">		}</span>
+	}
+
+	public final AssignOpContext assignOp() throws RecognitionException {
+<span class="nc" id="L1283">		AssignOpContext _localctx = new AssignOpContext(_ctx, getState());</span>
+<span class="nc" id="L1284">		enterRule(_localctx, 34, RULE_assignOp);</span>
+		int _la;
+		try {
+<span class="nc" id="L1287">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="nc" id="L1289">			setState(185);</span>
+<span class="nc" id="L1290">			_la = _input.LA(1);</span>
+<span class="nc bnc" id="L1291" title="All 4 branches missed.">			if ( !((((_la) &amp; ~0x3f) == 0 &amp;&amp; ((1L &lt;&lt; _la) &amp; ((1L &lt;&lt; PLUSEQUAL) | (1L &lt;&lt; MINUSEQUAL) | (1L &lt;&lt; MULTEQUAL) | (1L &lt;&lt; DIVIDEQUAL))) != 0)) ) {</span>
+<span class="nc" id="L1292">			_errHandler.recoverInline(this);</span>
+			}
+			else {
+<span class="nc bnc" id="L1295" title="All 2 branches missed.">				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;</span>
+<span class="nc" id="L1296">				_errHandler.reportMatch(this);</span>
+<span class="nc" id="L1297">				consume();</span>
+			}
+			}
+		}
+<span class="nc" id="L1301">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1302">			_localctx.exception = re;</span>
+<span class="nc" id="L1303">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1304">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L1307">			exitRule();</span>
+		}
+<span class="nc" id="L1309">		return _localctx;</span>
+	}
+
+	public static class LoopsContext extends ParserRuleContext {
+<span class="nc" id="L1313">		public TerminalNode Ifloop() { return getToken(CminusParser.Ifloop, 0); }</span>
+<span class="nc" id="L1314">		public TerminalNode LEFTPAREN() { return getToken(CminusParser.LEFTPAREN, 0); }</span>
+		public IfConditionsContext ifConditions() {
+<span class="nc" id="L1316">			return getRuleContext(IfConditionsContext.class,0);</span>
+		}
+<span class="nc" id="L1318">		public TerminalNode RIGHTPAREN() { return getToken(CminusParser.RIGHTPAREN, 0); }</span>
+<span class="nc" id="L1319">		public List&lt;TerminalNode&gt; LEFTCURLY() { return getTokens(CminusParser.LEFTCURLY); }</span>
+		public TerminalNode LEFTCURLY(int i) {
+<span class="nc" id="L1321">			return getToken(CminusParser.LEFTCURLY, i);</span>
+		}
+		public List&lt;ProgStatementsContext&gt; progStatements() {
+<span class="nc" id="L1324">			return getRuleContexts(ProgStatementsContext.class);</span>
+		}
+		public ProgStatementsContext progStatements(int i) {
+<span class="nc" id="L1327">			return getRuleContext(ProgStatementsContext.class,i);</span>
+		}
+<span class="nc" id="L1329">		public List&lt;TerminalNode&gt; RIGHTCURLY() { return getTokens(CminusParser.RIGHTCURLY); }</span>
+		public TerminalNode RIGHTCURLY(int i) {
+<span class="nc" id="L1331">			return getToken(CminusParser.RIGHTCURLY, i);</span>
+		}
+<span class="nc" id="L1333">		public TerminalNode Elseloop() { return getToken(CminusParser.Elseloop, 0); }</span>
+<span class="nc" id="L1334">		public TerminalNode Forloop() { return getToken(CminusParser.Forloop, 0); }</span>
+		public ForConditionsContext forConditions() {
+<span class="nc" id="L1336">			return getRuleContext(ForConditionsContext.class,0);</span>
+		}
+		public LoopsContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L1339">			super(parent, invokingState);</span>
+<span class="fc" id="L1340">		}</span>
+<span class="fc" id="L1341">		@Override public int getRuleIndex() { return RULE_loops; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1344" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterLoops(this);</span>
+<span class="nc" id="L1345">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1348" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitLoops(this);</span>
+<span class="nc" id="L1349">		}</span>
+	}
+
+	public final LoopsContext loops() throws RecognitionException {
+<span class="fc" id="L1353">		LoopsContext _localctx = new LoopsContext(_ctx, getState());</span>
+<span class="fc" id="L1354">		enterRule(_localctx, 36, RULE_loops);</span>
+		try {
+<span class="fc" id="L1356">			setState(215);</span>
+<span class="fc" id="L1357">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L1358" title="3 of 4 branches missed.">			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {</span>
+			case 1:
+<span class="fc" id="L1360">				enterOuterAlt(_localctx, 1);</span>
+				{
+<span class="fc" id="L1362">				setState(187);</span>
+<span class="fc" id="L1363">				match(Ifloop);</span>
+<span class="fc" id="L1364">				setState(188);</span>
+<span class="fc" id="L1365">				match(LEFTPAREN);</span>
+<span class="fc" id="L1366">				setState(189);</span>
+<span class="fc" id="L1367">				ifConditions();</span>
+<span class="fc" id="L1368">				setState(190);</span>
+<span class="fc" id="L1369">				match(RIGHTPAREN);</span>
+<span class="fc" id="L1370">				setState(191);</span>
+<span class="fc" id="L1371">				match(LEFTCURLY);</span>
+<span class="fc" id="L1372">				setState(192);</span>
+<span class="fc" id="L1373">				progStatements();</span>
+<span class="fc" id="L1374">				setState(193);</span>
+<span class="fc" id="L1375">				match(RIGHTCURLY);</span>
+				}
+<span class="fc" id="L1377">				break;</span>
+			case 2:
+<span class="nc" id="L1379">				enterOuterAlt(_localctx, 2);</span>
+				{
+<span class="nc" id="L1381">				setState(195);</span>
+<span class="nc" id="L1382">				match(Ifloop);</span>
+<span class="nc" id="L1383">				setState(196);</span>
+<span class="nc" id="L1384">				match(LEFTPAREN);</span>
+<span class="nc" id="L1385">				setState(197);</span>
+<span class="nc" id="L1386">				ifConditions();</span>
+<span class="nc" id="L1387">				setState(198);</span>
+<span class="nc" id="L1388">				match(RIGHTPAREN);</span>
+<span class="nc" id="L1389">				setState(199);</span>
+<span class="nc" id="L1390">				match(LEFTCURLY);</span>
+<span class="nc" id="L1391">				setState(200);</span>
+<span class="nc" id="L1392">				progStatements();</span>
+<span class="nc" id="L1393">				setState(201);</span>
+<span class="nc" id="L1394">				match(RIGHTCURLY);</span>
+<span class="nc" id="L1395">				setState(202);</span>
+<span class="nc" id="L1396">				match(Elseloop);</span>
+<span class="nc" id="L1397">				setState(203);</span>
+<span class="nc" id="L1398">				match(LEFTCURLY);</span>
+<span class="nc" id="L1399">				setState(204);</span>
+<span class="nc" id="L1400">				progStatements();</span>
+<span class="nc" id="L1401">				setState(205);</span>
+<span class="nc" id="L1402">				match(RIGHTCURLY);</span>
+				}
+<span class="nc" id="L1404">				break;</span>
+			case 3:
+<span class="nc" id="L1406">				enterOuterAlt(_localctx, 3);</span>
+				{
+<span class="nc" id="L1408">				setState(207);</span>
+<span class="nc" id="L1409">				match(Forloop);</span>
+<span class="nc" id="L1410">				setState(208);</span>
+<span class="nc" id="L1411">				match(LEFTPAREN);</span>
+<span class="nc" id="L1412">				setState(209);</span>
+<span class="nc" id="L1413">				forConditions();</span>
+<span class="nc" id="L1414">				setState(210);</span>
+<span class="nc" id="L1415">				match(RIGHTPAREN);</span>
+<span class="nc" id="L1416">				setState(211);</span>
+<span class="nc" id="L1417">				match(LEFTCURLY);</span>
+<span class="nc" id="L1418">				setState(212);</span>
+<span class="nc" id="L1419">				progStatements();</span>
+<span class="nc" id="L1420">				setState(213);</span>
+<span class="nc" id="L1421">				match(RIGHTCURLY);</span>
+				}
+				break;
+			}
+		}
+<span class="nc" id="L1426">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1427">			_localctx.exception = re;</span>
+<span class="nc" id="L1428">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1429">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1432">			exitRule();</span>
+		}
+<span class="fc" id="L1434">		return _localctx;</span>
+	}
+
+	public static class IfConditionsContext extends ParserRuleContext {
+		public List&lt;VarContext&gt; var() {
+<span class="nc" id="L1439">			return getRuleContexts(VarContext.class);</span>
+		}
+		public VarContext var(int i) {
+<span class="nc" id="L1442">			return getRuleContext(VarContext.class,i);</span>
+		}
+		public CompareContext compare() {
+<span class="nc" id="L1445">			return getRuleContext(CompareContext.class,0);</span>
+		}
+		public ExpContext exp() {
+<span class="nc" id="L1448">			return getRuleContext(ExpContext.class,0);</span>
+		}
+		public IfConditionsContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L1451">			super(parent, invokingState);</span>
+<span class="fc" id="L1452">		}</span>
+<span class="fc" id="L1453">		@Override public int getRuleIndex() { return RULE_ifConditions; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1456" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterIfConditions(this);</span>
+<span class="nc" id="L1457">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1460" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitIfConditions(this);</span>
+<span class="nc" id="L1461">		}</span>
+	}
+
+	public final IfConditionsContext ifConditions() throws RecognitionException {
+<span class="fc" id="L1465">		IfConditionsContext _localctx = new IfConditionsContext(_ctx, getState());</span>
+<span class="fc" id="L1466">		enterRule(_localctx, 38, RULE_ifConditions);</span>
+		try {
+<span class="fc" id="L1468">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L1470">			setState(217);</span>
+<span class="fc" id="L1471">			var();</span>
+<span class="fc" id="L1472">			setState(218);</span>
+<span class="fc" id="L1473">			compare();</span>
+<span class="fc" id="L1474">			setState(221);</span>
+<span class="fc" id="L1475">			_errHandler.sync(this);</span>
+<span class="pc bpc" id="L1476" title="2 of 3 branches missed.">			switch (_input.LA(1)) {</span>
+			case INT:
+			case CHAR:
+				{
+<span class="fc" id="L1480">				setState(219);</span>
+<span class="fc" id="L1481">				exp();</span>
+				}
+<span class="fc" id="L1483">				break;</span>
+			case VAR:
+				{
+<span class="nc" id="L1486">				setState(220);</span>
+<span class="nc" id="L1487">				var();</span>
+				}
+<span class="nc" id="L1489">				break;</span>
+			default:
+<span class="nc" id="L1491">				throw new NoViableAltException(this);</span>
+			}
+			}
+		}
+<span class="nc" id="L1495">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1496">			_localctx.exception = re;</span>
+<span class="nc" id="L1497">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1498">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1501">			exitRule();</span>
+		}
+<span class="fc" id="L1503">		return _localctx;</span>
+	}
+
+	public static class ForConditionsContext extends ParserRuleContext {
+		public VarContext var() {
+<span class="nc" id="L1508">			return getRuleContext(VarContext.class,0);</span>
+		}
+		public CompareContext compare() {
+<span class="nc" id="L1511">			return getRuleContext(CompareContext.class,0);</span>
+		}
+		public ExpContext exp() {
+<span class="nc" id="L1514">			return getRuleContext(ExpContext.class,0);</span>
+		}
+		public ForConditionsContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L1517">			super(parent, invokingState);</span>
+<span class="nc" id="L1518">		}</span>
+<span class="nc" id="L1519">		@Override public int getRuleIndex() { return RULE_forConditions; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1522" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterForConditions(this);</span>
+<span class="nc" id="L1523">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1526" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitForConditions(this);</span>
+<span class="nc" id="L1527">		}</span>
+	}
+
+	public final ForConditionsContext forConditions() throws RecognitionException {
+<span class="nc" id="L1531">		ForConditionsContext _localctx = new ForConditionsContext(_ctx, getState());</span>
+<span class="nc" id="L1532">		enterRule(_localctx, 40, RULE_forConditions);</span>
+		try {
+<span class="nc" id="L1534">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="nc" id="L1536">			setState(223);</span>
+<span class="nc" id="L1537">			var();</span>
+<span class="nc" id="L1538">			setState(224);</span>
+<span class="nc" id="L1539">			compare();</span>
+<span class="nc" id="L1540">			setState(225);</span>
+<span class="nc" id="L1541">			exp();</span>
+			}
+		}
+<span class="nc" id="L1544">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1545">			_localctx.exception = re;</span>
+<span class="nc" id="L1546">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1547">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L1550">			exitRule();</span>
+		}
+<span class="nc" id="L1552">		return _localctx;</span>
+	}
+
+	public static class CompareContext extends ParserRuleContext {
+<span class="nc" id="L1556">		public TerminalNode LESSTHAN() { return getToken(CminusParser.LESSTHAN, 0); }</span>
+<span class="nc" id="L1557">		public TerminalNode GREATERTHAN() { return getToken(CminusParser.GREATERTHAN, 0); }</span>
+<span class="nc" id="L1558">		public TerminalNode LESSEQUAL() { return getToken(CminusParser.LESSEQUAL, 0); }</span>
+<span class="nc" id="L1559">		public TerminalNode GREATEREQUAL() { return getToken(CminusParser.GREATEREQUAL, 0); }</span>
+		public CompareContext(ParserRuleContext parent, int invokingState) {
+<span class="fc" id="L1561">			super(parent, invokingState);</span>
+<span class="fc" id="L1562">		}</span>
+<span class="fc" id="L1563">		@Override public int getRuleIndex() { return RULE_compare; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1566" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterCompare(this);</span>
+<span class="nc" id="L1567">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1570" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitCompare(this);</span>
+<span class="nc" id="L1571">		}</span>
+	}
+
+	public final CompareContext compare() throws RecognitionException {
+<span class="fc" id="L1575">		CompareContext _localctx = new CompareContext(_ctx, getState());</span>
+<span class="fc" id="L1576">		enterRule(_localctx, 42, RULE_compare);</span>
+		int _la;
+		try {
+<span class="fc" id="L1579">			enterOuterAlt(_localctx, 1);</span>
+			{
+<span class="fc" id="L1581">			setState(227);</span>
+<span class="fc" id="L1582">			_la = _input.LA(1);</span>
+<span class="pc bpc" id="L1583" title="2 of 4 branches missed.">			if ( !((((_la) &amp; ~0x3f) == 0 &amp;&amp; ((1L &lt;&lt; _la) &amp; ((1L &lt;&lt; LESSTHAN) | (1L &lt;&lt; GREATERTHAN) | (1L &lt;&lt; LESSEQUAL) | (1L &lt;&lt; GREATEREQUAL))) != 0)) ) {</span>
+<span class="nc" id="L1584">			_errHandler.recoverInline(this);</span>
+			}
+			else {
+<span class="pc bpc" id="L1587" title="1 of 2 branches missed.">				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;</span>
+<span class="fc" id="L1588">				_errHandler.reportMatch(this);</span>
+<span class="fc" id="L1589">				consume();</span>
+			}
+			}
+		}
+<span class="nc" id="L1593">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1594">			_localctx.exception = re;</span>
+<span class="nc" id="L1595">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1596">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="fc" id="L1599">			exitRule();</span>
+		}
+<span class="fc" id="L1601">		return _localctx;</span>
+	}
+
+	public static class SkipContext extends ParserRuleContext {
+		public SkipContext(ParserRuleContext parent, int invokingState) {
+<span class="nc" id="L1606">			super(parent, invokingState);</span>
+<span class="nc" id="L1607">		}</span>
+<span class="nc" id="L1608">		@Override public int getRuleIndex() { return RULE_skip; }</span>
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1611" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).enterSkip(this);</span>
+<span class="nc" id="L1612">		}</span>
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+<span class="nc bnc" id="L1615" title="All 2 branches missed.">			if ( listener instanceof CminusListener ) ((CminusListener)listener).exitSkip(this);</span>
+<span class="nc" id="L1616">		}</span>
+	}
+
+	public final SkipContext skip() throws RecognitionException {
+<span class="nc" id="L1620">		SkipContext _localctx = new SkipContext(_ctx, getState());</span>
+<span class="nc" id="L1621">		enterRule(_localctx, 44, RULE_skip);</span>
+		try {
+<span class="nc" id="L1623">			enterOuterAlt(_localctx, 1);</span>
+			{
+			}
+		}
+<span class="nc" id="L1627">		catch (RecognitionException re) {</span>
+<span class="nc" id="L1628">			_localctx.exception = re;</span>
+<span class="nc" id="L1629">			_errHandler.reportError(this, re);</span>
+<span class="nc" id="L1630">			_errHandler.recover(this, re);</span>
+		}
+		finally {
+<span class="nc" id="L1633">			exitRule();</span>
+		}
+<span class="nc" id="L1635">		return _localctx;</span>
+	}
+
+	public static final String _serializedATN =
+		&quot;\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3%\u00ea\4\2\t\2\4&quot;+
+		&quot;\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t&quot;+
+		&quot;\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22&quot;+
+		&quot;\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\3\2\3\2\3&quot;+
+		&quot;\2\3\2\3\2\3\2\3\2\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4B\n\4\3&quot;+
+		&quot;\5\3\5\5\5F\n\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5P\n\5\3\6\3\6\3\6\3&quot;+
+		&quot;\6\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\be\n&quot;+
+		&quot;\b\3\t\3\t\3\t\3\t\3\t\3\t\5\tm\n\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\5&quot;+
+		&quot;\nw\n\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\5\n\u0080\n\n\3\n\3\n\3\n\3\n\3\n&quot;+
+		&quot;\3\n\3\n\3\n\3\n\5\n\u008b\n\n\3\n\3\n\3\n\3\n\3\n\5\n\u0092\n\n\3\13&quot;+
+		&quot;\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\17&quot;+
+		&quot;\3\17\5\17\u00a6\n\17\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20\3\20&quot;+
+		&quot;\3\20\3\20\3\20\3\20\5\20\u00b6\n\20\3\21\3\21\3\22\3\22\3\23\3\23\3\24&quot;+
+		&quot;\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24&quot;+
+		&quot;\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\3\24\5\24&quot;+
+		&quot;\u00da\n\24\3\25\3\25\3\25\3\25\5\25\u00e0\n\25\3\26\3\26\3\26\3\26\3&quot;+
+		&quot;\27\3\27\3\30\3\30\3\30\2\2\31\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36&quot;+
+		&quot; \&quot;$&amp;(*,.\2\6\3\2\22\25\4\2  $$\3\2\26\31\3\2\32\35\2\u00e9\2\60\3\2\2&quot;+
+		&quot;\2\4\67\3\2\2\2\6A\3\2\2\2\bO\3\2\2\2\nQ\3\2\2\2\f[\3\2\2\2\16d\3\2\2&quot;+
+		&quot;\2\20f\3\2\2\2\22\u0091\3\2\2\2\24\u0093\3\2\2\2\26\u0098\3\2\2\2\30\u009d&quot;+
+		&quot;\3\2\2\2\32\u00a1\3\2\2\2\34\u00a5\3\2\2\2\36\u00b5\3\2\2\2 \u00b7\3\2&quot;+
+		&quot;\2\2\&quot;\u00b9\3\2\2\2$\u00bb\3\2\2\2&amp;\u00d9\3\2\2\2(\u00db\3\2\2\2*\u00e1&quot;+
+		&quot;\3\2\2\2,\u00e5\3\2\2\2.\u00e7\3\2\2\2\60\61\5\f\7\2\61\62\5\4\3\2\62&quot;+
+		&quot;\63\7\20\2\2\63\64\5\6\4\2\64\65\7\21\2\2\65\66\7\2\2\3\66\3\3\2\2\2\67&quot;+
+		&quot;8\7\16\2\28\5\3\2\2\29B\5\b\5\2:;\5\b\5\2;&lt;\5\6\4\2&lt;B\3\2\2\2=B\5&amp;\24&quot;+
+		&quot;\2&gt;?\5&amp;\24\2?@\5\6\4\2@B\3\2\2\2A9\3\2\2\2A:\3\2\2\2A=\3\2\2\2A&gt;\3\2\2&quot;+
+		&quot;\2B\7\3\2\2\2CF\5\26\f\2DF\5\30\r\2EC\3\2\2\2ED\3\2\2\2FG\3\2\2\2GH\7&quot;+
+		&quot;%\2\2HP\3\2\2\2IJ\5\24\13\2JK\7%\2\2KP\3\2\2\2LP\5\22\n\2MP\5\16\b\2N&quot;+
+		&quot;P\5\n\6\2OE\3\2\2\2OI\3\2\2\2OL\3\2\2\2OM\3\2\2\2ON\3\2\2\2P\t\3\2\2\2&quot;+
+		&quot;QR\5\f\7\2RS\7\b\2\2ST\7\6\2\2TU\5\32\16\2UV\5\f\7\2VW\7\t\2\2WX\7\36&quot;+
+		&quot;\2\2XY\7\7\2\2YZ\5\32\16\2Z\13\3\2\2\2[\\\7\3\2\2\\\r\3\2\2\2]^\5\32\16&quot;+
+		&quot;\2^_\7\b\2\2_`\5\f\7\2`a\5\32\16\2ab\7\t\2\2be\3\2\2\2ce\5\20\t\2d]\3&quot;+
+		&quot;\2\2\2dc\3\2\2\2e\17\3\2\2\2fg\7\6\2\2gh\5\32\16\2hi\7\b\2\2il\5\f\7\2&quot;+
+		&quot;jm\5\32\16\2km\5\&quot;\22\2lj\3\2\2\2lk\3\2\2\2mn\3\2\2\2no\7\t\2\2o\21\3&quot;+
+		&quot;\2\2\2pq\5\f\7\2qr\5\32\16\2rs\7\b\2\2sv\5\f\7\2tw\5\32\16\2uw\5\&quot;\22&quot;+
+		&quot;\2vt\3\2\2\2vu\3\2\2\2wx\3\2\2\2xy\7\t\2\2yz\7\20\2\2z{\5\6\4\2{\177\7&quot;+
+		&quot;\5\2\2|\u0080\5\32\16\2}\u0080\5\&quot;\22\2~\u0080\5\20\t\2\177|\3\2\2\2\177&quot;+
+		&quot;}\3\2\2\2\177~\3\2\2\2\u0080\u0081\3\2\2\2\u0081\u0082\7%\2\2\u0082\u0083&quot;+
+		&quot;\7\21\2\2\u0083\u0092\3\2\2\2\u0084\u0085\7\4\2\2\u0085\u0086\5\32\16&quot;+
+		&quot;\2\u0086\u0087\7\b\2\2\u0087\u008a\5\f\7\2\u0088\u008b\5\32\16\2\u0089&quot;+
+		&quot;\u008b\5\&quot;\22\2\u008a\u0088\3\2\2\2\u008a\u0089\3\2\2\2\u008b\u008c\3&quot;+
+		&quot;\2\2\2\u008c\u008d\7\t\2\2\u008d\u008e\7\20\2\2\u008e\u008f\5\6\4\2\u008f&quot;+
+		&quot;\u0090\7\21\2\2\u0090\u0092\3\2\2\2\u0091p\3\2\2\2\u0091\u0084\3\2\2\2&quot;+
+		&quot;\u0092\23\3\2\2\2\u0093\u0094\7\r\2\2\u0094\u0095\7\b\2\2\u0095\u0096&quot;+
+		&quot;\7#\2\2\u0096\u0097\7\t\2\2\u0097\25\3\2\2\2\u0098\u0099\5\f\7\2\u0099&quot;+
+		&quot;\u009a\5\32\16\2\u009a\u009b\5\34\17\2\u009b\u009c\5\36\20\2\u009c\27&quot;+
+		&quot;\3\2\2\2\u009d\u009e\5\32\16\2\u009e\u009f\5\34\17\2\u009f\u00a0\5\36&quot;+
+		&quot;\20\2\u00a0\31\3\2\2\2\u00a1\u00a2\7\17\2\2\u00a2\33\3\2\2\2\u00a3\u00a6&quot;+
+		&quot;\7\36\2\2\u00a4\u00a6\5$\23\2\u00a5\u00a3\3\2\2\2\u00a5\u00a4\3\2\2\2&quot;+
+		&quot;\u00a6\35\3\2\2\2\u00a7\u00b6\5\&quot;\22\2\u00a8\u00a9\5\&quot;\22\2\u00a9\u00aa&quot;+
+		&quot;\5 \21\2\u00aa\u00ab\5\&quot;\22\2\u00ab\u00b6\3\2\2\2\u00ac\u00ad\5\32\16&quot;+
+		&quot;\2\u00ad\u00ae\5 \21\2\u00ae\u00af\5\&quot;\22\2\u00af\u00b6\3\2\2\2\u00b0&quot;+
+		&quot;\u00b1\5\&quot;\22\2\u00b1\u00b2\5 \21\2\u00b2\u00b3\5\32\16\2\u00b3\u00b6&quot;+
+		&quot;\3\2\2\2\u00b4\u00b6\5\32\16\2\u00b5\u00a7\3\2\2\2\u00b5\u00a8\3\2\2\2&quot;+
+		&quot;\u00b5\u00ac\3\2\2\2\u00b5\u00b0\3\2\2\2\u00b5\u00b4\3\2\2\2\u00b6\37&quot;+
+		&quot;\3\2\2\2\u00b7\u00b8\t\2\2\2\u00b8!\3\2\2\2\u00b9\u00ba\t\3\2\2\u00ba&quot;+
+		&quot;#\3\2\2\2\u00bb\u00bc\t\4\2\2\u00bc%\3\2\2\2\u00bd\u00be\7\n\2\2\u00be&quot;+
+		&quot;\u00bf\7\b\2\2\u00bf\u00c0\5(\25\2\u00c0\u00c1\7\t\2\2\u00c1\u00c2\7\20&quot;+
+		&quot;\2\2\u00c2\u00c3\5\6\4\2\u00c3\u00c4\7\21\2\2\u00c4\u00da\3\2\2\2\u00c5&quot;+
+		&quot;\u00c6\7\n\2\2\u00c6\u00c7\7\b\2\2\u00c7\u00c8\5(\25\2\u00c8\u00c9\7\t&quot;+
+		&quot;\2\2\u00c9\u00ca\7\20\2\2\u00ca\u00cb\5\6\4\2\u00cb\u00cc\7\21\2\2\u00cc&quot;+
+		&quot;\u00cd\7\13\2\2\u00cd\u00ce\7\20\2\2\u00ce\u00cf\5\6\4\2\u00cf\u00d0\7&quot;+
+		&quot;\21\2\2\u00d0\u00da\3\2\2\2\u00d1\u00d2\7\f\2\2\u00d2\u00d3\7\b\2\2\u00d3&quot;+
+		&quot;\u00d4\5*\26\2\u00d4\u00d5\7\t\2\2\u00d5\u00d6\7\20\2\2\u00d6\u00d7\5&quot;+
+		&quot;\6\4\2\u00d7\u00d8\7\21\2\2\u00d8\u00da\3\2\2\2\u00d9\u00bd\3\2\2\2\u00d9&quot;+
+		&quot;\u00c5\3\2\2\2\u00d9\u00d1\3\2\2\2\u00da\'\3\2\2\2\u00db\u00dc\5\32\16&quot;+
+		&quot;\2\u00dc\u00df\5,\27\2\u00dd\u00e0\5\&quot;\22\2\u00de\u00e0\5\32\16\2\u00df&quot;+
+		&quot;\u00dd\3\2\2\2\u00df\u00de\3\2\2\2\u00e0)\3\2\2\2\u00e1\u00e2\5\32\16&quot;+
+		&quot;\2\u00e2\u00e3\5,\27\2\u00e3\u00e4\5\&quot;\22\2\u00e4+\3\2\2\2\u00e5\u00e6&quot;+
+		&quot;\t\5\2\2\u00e6-\3\2\2\2\u00e7\u00e8\3\2\2\2\u00e8/\3\2\2\2\17AEOdlv\177&quot;+
+		&quot;\u008a\u0091\u00a5\u00b5\u00d9\u00df&quot;;
+<span class="fc" id="L1710">	public static final ATN _ATN =</span>
+<span class="fc" id="L1711">		new ATNDeserializer().deserialize(_serializedATN.toCharArray());</span>
+	static {
+<span class="fc" id="L1713">		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];</span>
+<span class="fc bfc" id="L1714" title="All 2 branches covered.">		for (int i = 0; i &lt; _ATN.getNumberOfDecisions(); i++) {</span>
+<span class="fc" id="L1715">			_decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);</span>
+		}
+<span class="fc" id="L1717">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

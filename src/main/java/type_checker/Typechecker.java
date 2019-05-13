@@ -1,49 +1,44 @@
 package type_checker;
 
-import type_checker_syntax.StructureDeclaration;
-import type_checker_syntax.Variable;
-import type_checker_syntax.AssignmentStmt;
+import type_checker_syntax.SequenceStmt;
 import type_checker_syntax.VariableExp;
-import type_checker_syntax.VariableLhs;
-import type_checker_syntax.Type;
-import type_checker_syntax.StructureName;
-import type_checker_syntax.IntType;
-import type_checker_syntax.IntExp;
-import type_checker_syntax.BinopExp;
-import type_checker_syntax.Lhs;
-import type_checker_syntax.Stmt;
-import type_checker_syntax.ReturnVoidStmt;
-import type_checker_syntax.FieldAccessExp;
-import type_checker_syntax.DereferenceExp;
-import type_checker_syntax.VariableDeclaration;
 import type_checker_syntax.ExpStmt;
-import type_checker_syntax.FunctionCallExp;
-import type_checker_syntax.EqualsOp;
-import type_checker_syntax.IfStmt;
-import type_checker_syntax.Op;
-import type_checker_syntax.FreeStmt;
-import type_checker_syntax.PointerType;
-import type_checker_syntax.VoidType;
-import type_checker_syntax.SizeofExp;
+import type_checker_syntax.Exp;
 import type_checker_syntax.Program;
+import type_checker_syntax.CharExp;
+import type_checker_syntax.FunctionName;
+import type_checker_syntax.VariableLhs;
+import type_checker_syntax.BoolType;
+import type_checker_syntax.CastExp;
+import type_checker_syntax.ReturnExpStmt;
+import type_checker_syntax.CharType;
+import type_checker_syntax.AddressOfExp;
+import type_checker_syntax.Op;
+import type_checker_syntax.AssignmentStmt;
+import type_checker_syntax.DereferenceExp;
+import type_checker_syntax.FunctionDefinition;
+import type_checker_syntax.VariableDeclarationInitializationStmt;
+import type_checker_syntax.VoidType;
+import type_checker_syntax.IntExp;
+import type_checker_syntax.FreeStmt;
+import type_checker_syntax.BinopExp;
+import type_checker_syntax.Type;
+import type_checker_syntax.EqualsOp;
+import type_checker_syntax.FunctionCallExp;
 import type_checker_syntax.WhileStmt;
+import type_checker_syntax.BoolExp;
+import type_checker_syntax.IntType;
+import type_checker_syntax.ReturnVoidStmt;
+import type_checker_syntax.VariableDeclaration;
 import type_checker_syntax.BreakStmt;
 import type_checker_syntax.PlusOp;
-import type_checker_syntax.FieldAccessLhs;
-import type_checker_syntax.CastExp;
-import type_checker_syntax.FunctionDefinition;
-import type_checker_syntax.FunctionName;
-import type_checker_syntax.DereferenceLhs;
-import type_checker_syntax.StructureType;
-import type_checker_syntax.BoolType;
-import type_checker_syntax.ReturnExpStmt;
-import type_checker_syntax.FieldName;
-import type_checker_syntax.VariableDeclarationInitializationStmt;
-import type_checker_syntax.AddressOfExp;
 import type_checker_syntax.ContinueStmt;
-import type_checker_syntax.SequenceStmt;
-import type_checker_syntax.BoolExp;
-import type_checker_syntax.Exp;
+import type_checker_syntax.Variable;
+import type_checker_syntax.Stmt;
+import type_checker_syntax.Lhs;
+import type_checker_syntax.PointerType;
+import type_checker_syntax.IfStmt;
+import type_checker_syntax.DereferenceLhs;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -54,15 +49,14 @@ import java.util.HashSet;
 public class Typechecker {
     // maps the name of the structure to its fields, and each of those
     // fields to its type
-    private final Map<StructureName, LinkedHashMap<FieldName, Type>> structDecs;
+   // private final Map<StructureName, LinkedHashMap<FieldName, Type>> structDecs;
 
     // maps each function name to its parameter types and return type
     private final Map<FunctionName, Pair<Type[], Type>> functionDefs;
 
     private Typechecker(final Program program) throws TypeErrorException {
         // have to load these before checking structure or function validity
-        structDecs = makeStructMapping(program.structDecs);
-        ensureStructureFieldsValid();
+       
 
         functionDefs = makeFunctionMapping(program.functionDefs);
 
@@ -71,20 +65,35 @@ public class Typechecker {
         }
     }
 
-    // makes sure that structure fields don't refer to non-existent structures
-    private void ensureStructureFieldsValid() throws TypeErrorException {
-        for (final LinkedHashMap<FieldName, Type> fields : structDecs.values()) {
-            for (final Type type : fields.values()) {
-                ensureValidType(type);
-            }
+        private void typecheckFunctionDef(final FunctionDefinition fdef) throws TypeErrorException {
+        final InScope initialScope = new InScope(fdef.returnType,
+                                                 initialVariableMapping(fdef.parameters),
+                                                 false);
+        final Pair<InScope, Boolean> stmtResult = initialScope.typecheckStmt(fdef.body);
+
+        if (!stmtResult.second.booleanValue() &&
+            !(fdef.returnType instanceof VoidType)) {
+            throw new TypeErrorException("Missing return in " + fdef.name.toString());
         }
+    }
+        private static Map<Variable, Type> initialVariableMapping(final VariableDeclaration[] parameters) throws TypeErrorException {
+        final Map<Variable, Type> result = new HashMap<Variable, Type>();
+
+        for (final VariableDeclaration dec : parameters) {
+            result.put(dec.variable, dec.type);
+        }
+
+        if (result.size() != parameters.length) {
+            throw new TypeErrorException("Duplicate variable name in function parameters");
+        }
+
+        return result;
     }
     
     // intended for testing
     public static Type expTypeForTesting(final Exp exp) throws TypeErrorException {
         final Typechecker checker =
-            new Typechecker(new Program(new StructureDeclaration[0],
-                                        new FunctionDefinition[0]));
+            new Typechecker(new Program(new FunctionDefinition[0]));
         return checker.expTypeNoScopeForTesting(exp);
     }
     
@@ -119,7 +128,7 @@ public class Typechecker {
 
         for (int index = 0; index < vars.length; index++) {
             final Type current = vars[index].type;
-            ensureValidType(current);
+            //ensureValidType(current);
             ensureNonVoidType(current);
             result[index] = current;
         }
@@ -127,16 +136,7 @@ public class Typechecker {
         return result;
     }
 
-    // the user _can_ write an invalid type, e.g., reference a non-existent structure
-    private void ensureValidType(final Type type) throws TypeErrorException {
-        if (type instanceof StructureType) {
-            final StructureName name = ((StructureType)type).name;
-            if (!structDecs.containsKey(name)) {
-                throw new TypeErrorException("Non-existent structure referenced: " +
-                                             name.toString());
-            }
-        }
-    }
+    
             
     private static void ensureNonVoidType(final Type type) throws TypeErrorException {
         if (type instanceof VoidType) {
@@ -144,94 +144,7 @@ public class Typechecker {
         }
     }
     
-    // not permitted to have multiple structure declarations with the same name
-    private static Map<StructureName, LinkedHashMap<FieldName, Type>>
-        makeStructMapping(final StructureDeclaration[] structDecs) throws TypeErrorException {
-
-        final Map<StructureName, LinkedHashMap<FieldName, Type>> result =
-            new HashMap<StructureName, LinkedHashMap<FieldName, Type>>();
-
-        for (final StructureDeclaration dec : structDecs) {
-            final LinkedHashMap<FieldName, Type> fieldMapping =
-                makeFieldMapping(dec.fields);
-            result.put(dec.name, fieldMapping);
-        }
-
-        if (result.size() != structDecs.length) {
-            throw new TypeErrorException("Duplicate structure name");
-        }
-
-        return result;
-    }
-
-    // not permitted to have repeated field names in the same structure
-    // fields cannot have void types
-    private static LinkedHashMap<FieldName, Type>
-        makeFieldMapping(final VariableDeclaration[] fields) throws TypeErrorException {
-        
-        final LinkedHashMap<FieldName, Type> result =
-            new LinkedHashMap<FieldName, Type>();
-
-        for (final VariableDeclaration dec : fields) {
-            ensureNonVoidType(dec.type);
-            result.put(new FieldName(dec.variable.name), dec.type);
-        }
-
-        if (result.size() != fields.length) {
-            throw new TypeErrorException("Duplicate field name");
-        }
-
-        return result;
-    }
-    
-    private void typecheckFunctionDef(final FunctionDefinition fdef) throws TypeErrorException {
-        final InScope initialScope = new InScope(fdef.returnType,
-                                                 initialVariableMapping(fdef.parameters),
-                                                 false);
-        final Pair<InScope, Boolean> stmtResult = initialScope.typecheckStmt(fdef.body);
-
-        if (!stmtResult.second.booleanValue() &&
-            !(fdef.returnType instanceof VoidType)) {
-            throw new TypeErrorException("Missing return in " + fdef.name.toString());
-        }
-    }
-
-    // error if duplicate variable names are used
-    private static Map<Variable, Type> initialVariableMapping(final VariableDeclaration[] parameters) throws TypeErrorException {
-        final Map<Variable, Type> result = new HashMap<Variable, Type>();
-
-        for (final VariableDeclaration dec : parameters) {
-            result.put(dec.variable, dec.type);
-        }
-
-        if (result.size() != parameters.length) {
-            throw new TypeErrorException("Duplicate variable name in function parameters");
-        }
-
-        return result;
-    }
-    
-    private void checkMakeStructure(final StructureName name,
-                                    final Type[] parameterTypes) throws TypeErrorException {
-        final LinkedHashMap<FieldName, Type> expected = structDecs.get(name);
-
-        if (expected != null) {
-            if (expected.size() == parameterTypes.length) {
-                int parameterIndex = 0;
-                for (final Type expectedType : expected.values()) {
-                    final Type receivedType = parameterTypes[parameterIndex++];
-                    ensureTypesSame(expectedType, receivedType);
-                }
-            } else {
-                throw new TypeErrorException("Expected " + expected.size() +
-                                             " params; got " + parameterTypes.length + " params");
-            }
-        } else {
-            throw new TypeErrorException("No such structure defined: " + name.toString());
-        }
-    }
-
-    // returns the return type
+   // returns the return type
     private Type checkFunctionCall(final FunctionName name,
                                    final Type[] parameterTypes) throws TypeErrorException {
         final Pair<Type[], Type> expected = functionDefs.get(name);
@@ -323,27 +236,7 @@ public class Typechecker {
             return new InScope(returnType, inScope, true);
         }
         
-        private Type typeofAccess(final Type maybeStructureType,
-                                  final FieldName field) throws TypeErrorException {
-            if (maybeStructureType instanceof StructureType) {
-                final StructureName name = ((StructureType)maybeStructureType).name;
-                final LinkedHashMap<FieldName, Type> expected = structDecs.get(name);
-                if (expected != null) {
-                    final Type fieldType = expected.get(field);
-                    if (fieldType != null) {
-                        return fieldType;
-                    } else {
-                        throw new TypeErrorException("Structure " + name.toString() +
-                                                     " does not have field " + field.toString());
-                    }
-                } else {
-                    throw new TypeErrorException("No structure with name: " + name.toString());
-                }
-            } else {
-                throw new TypeErrorException("Expected structure type; received: " +
-                                             maybeStructureType.toString());
-            }
-        }
+        
 
         private Type typeofDereference(final Type maybePointerType) throws TypeErrorException {
             if (maybePointerType instanceof PointerType) {
@@ -358,10 +251,6 @@ public class Typechecker {
         private Type typeofLhs(final Lhs lhs) throws TypeErrorException {
             if (lhs instanceof VariableLhs) {
                 return lookupVariable(((VariableLhs)lhs).variable);
-            } else if (lhs instanceof FieldAccessLhs) {
-                final FieldAccessLhs asAccess = (FieldAccessLhs)lhs;
-                return typeofAccess(typeofLhs(asAccess.lhs),
-                                    asAccess.field);
             } else if (lhs instanceof DereferenceLhs) {
                 final Type nestedType =
                     typeofLhs(((DereferenceLhs)lhs).lhs);
@@ -393,14 +282,12 @@ public class Typechecker {
         public Type typeofExp(final Exp exp) throws TypeErrorException {
             if (exp instanceof IntExp) {
                 return new IntType();
+            } else if (exp instanceof CharExp) {
+                return new CharType();
             } else if (exp instanceof BoolExp) {
                 return new BoolType();
             } else if (exp instanceof VariableExp) {
                 return lookupVariable(((VariableExp)exp).variable);
-            }  else if (exp instanceof SizeofExp) {
-                // takes a type and returns an int
-                // there is no sort of checking that can be done on the type
-                return new IntType();
             } else if (exp instanceof BinopExp) {
                 // the return type and expected parameter types all depend
                 // on the operator.  In all cases, we need to get the types
@@ -410,7 +297,7 @@ public class Typechecker {
                 final Type leftType = typeofExp(asBinop.left);
                 final Type rightType = typeofExp(asBinop.right);
                 return binopType(leftType, asBinop.op, rightType);
-            } else if (exp instanceof FunctionCallExp) {
+            }else if (exp instanceof FunctionCallExp) {
                 final FunctionCallExp asCall = (FunctionCallExp)exp;
                 return checkFunctionCall(asCall.name,
                                          typeofExps(asCall.parameters));
@@ -428,10 +315,6 @@ public class Typechecker {
             } else if (exp instanceof DereferenceExp) {
                 final Type nested = typeofExp(((DereferenceExp)exp).exp);
                 return typeofDereference(nested);
-            } else if (exp instanceof FieldAccessExp) {
-                final FieldAccessExp asAccess = (FieldAccessExp)exp;
-                return typeofAccess(typeofExp(asAccess.exp),
-                                    asAccess.field);
             } else {
                 assert(false);
                 throw new TypeErrorException("Unrecognized expression: " + exp.toString());
@@ -473,7 +356,7 @@ public class Typechecker {
                     (VariableDeclarationInitializationStmt)stmt;
                 final Type expectedType = dec.varDec.type;
                 ensureNonVoidType(expectedType);
-                ensureValidType(expectedType);
+                //ensureValidType(expectedType);
                 ensureTypesSame(expectedType,
                                 typeofExp(dec.exp));
                 final InScope resultInScope =

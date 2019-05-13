@@ -1,0 +1,125 @@
+.data
+newline:
+    .asciiz "\n"
+.text
+main:
+$REAL_MAIN0:
+    jal main0
+    li $v0, 10
+    syscall
+main0:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    li $t0, 7
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    jal fib0
+    lw $a0, 0($sp)
+    addi $sp, $sp, 4
+    li $v0, 1
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    jr $ra
+fib0:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    lw $t0, 4($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    li $t0, 0
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t1, 0($sp)
+    addi $sp, $sp, 4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    seq $t0, $t0, $t1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    beq $t0, $zero, fib_if_false_start0
+    li $t0, 0
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $ra, 4($sp)
+    lw $t0, 0($sp)
+    sw $t0, 8($sp)
+    addi $sp, $sp, 8
+    jr $ra
+    j fib_if_false_end1
+fib_if_false_start0:
+    lw $t0, 4($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    li $t0, 1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t1, 0($sp)
+    addi $sp, $sp, 4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    seq $t0, $t0, $t1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    beq $t0, $zero, fib_if_false_start2
+    li $t0, 1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $ra, 4($sp)
+    lw $t0, 0($sp)
+    sw $t0, 8($sp)
+    addi $sp, $sp, 8
+    jr $ra
+    j fib_if_false_end3
+fib_if_false_start2:
+    lw $t0, 4($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    li $t0, 1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t1, 0($sp)
+    addi $sp, $sp, 4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    sub $t0, $t0, $t1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    jal fib0
+    lw $t0, 8($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    li $t0, 2
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t1, 0($sp)
+    addi $sp, $sp, 4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    sub $t0, $t0, $t1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    jal fib0
+    lw $t1, 0($sp)
+    addi $sp, $sp, 4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    add $t0, $t0, $t1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $ra, 4($sp)
+    lw $t0, 0($sp)
+    sw $t0, 8($sp)
+    addi $sp, $sp, 8
+    jr $ra
+fib_if_false_end3:
+fib_if_false_end1:
+    li $v0, 10
+    syscall

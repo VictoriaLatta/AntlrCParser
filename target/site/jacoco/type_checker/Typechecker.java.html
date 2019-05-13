@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Typechecker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CminusCompiler</a> &gt; <a href="index.source.html" class="el_package">type_checker</a> &gt; <span class="el_source">Typechecker.java</span></div><h1>Typechecker.java</h1><pre class="source lang-java linenums">package type_checker;
+
+import type_checker_syntax.SequenceStmt;
+import type_checker_syntax.VariableExp;
+import type_checker_syntax.ExpStmt;
+import type_checker_syntax.Exp;
+import type_checker_syntax.Program;
+import type_checker_syntax.CharExp;
+import type_checker_syntax.FunctionName;
+import type_checker_syntax.VariableLhs;
+import type_checker_syntax.BoolType;
+import type_checker_syntax.CastExp;
+import type_checker_syntax.ReturnExpStmt;
+import type_checker_syntax.CharType;
+import type_checker_syntax.AddressOfExp;
+import type_checker_syntax.Op;
+import type_checker_syntax.AssignmentStmt;
+import type_checker_syntax.DereferenceExp;
+import type_checker_syntax.FunctionDefinition;
+import type_checker_syntax.VariableDeclarationInitializationStmt;
+import type_checker_syntax.VoidType;
+import type_checker_syntax.IntExp;
+import type_checker_syntax.FreeStmt;
+import type_checker_syntax.BinopExp;
+import type_checker_syntax.Type;
+import type_checker_syntax.EqualsOp;
+import type_checker_syntax.FunctionCallExp;
+import type_checker_syntax.WhileStmt;
+import type_checker_syntax.BoolExp;
+import type_checker_syntax.IntType;
+import type_checker_syntax.ReturnVoidStmt;
+import type_checker_syntax.VariableDeclaration;
+import type_checker_syntax.BreakStmt;
+import type_checker_syntax.PlusOp;
+import type_checker_syntax.ContinueStmt;
+import type_checker_syntax.Variable;
+import type_checker_syntax.Stmt;
+import type_checker_syntax.Lhs;
+import type_checker_syntax.PointerType;
+import type_checker_syntax.IfStmt;
+import type_checker_syntax.DereferenceLhs;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.HashSet;
+
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">public class Typechecker {</span>
+    // maps the name of the structure to its fields, and each of those
+    // fields to its type
+   // private final Map&lt;StructureName, LinkedHashMap&lt;FieldName, Type&gt;&gt; structDecs;
+
+    // maps each function name to its parameter types and return type
+    private final Map&lt;FunctionName, Pair&lt;Type[], Type&gt;&gt; functionDefs;
+
+<span class="fc" id="L57">    private Typechecker(final Program program) throws TypeErrorException {</span>
+        // have to load these before checking structure or function validity
+       
+
+<span class="fc" id="L61">        functionDefs = makeFunctionMapping(program.functionDefs);</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (final FunctionDefinition def : program.functionDefs) {</span>
+<span class="fc" id="L64">            typecheckFunctionDef(def);</span>
+        }
+<span class="fc" id="L66">    }</span>
+
+        private void typecheckFunctionDef(final FunctionDefinition fdef) throws TypeErrorException {
+<span class="fc" id="L69">        final InScope initialScope = new InScope(fdef.returnType,</span>
+<span class="fc" id="L70">                                                 initialVariableMapping(fdef.parameters),</span>
+                                                 false);
+<span class="fc" id="L72">        final Pair&lt;InScope, Boolean&gt; stmtResult = initialScope.typecheckStmt(fdef.body);</span>
+
+<span class="fc bfc" id="L74" title="All 4 branches covered.">        if (!stmtResult.second.booleanValue() &amp;&amp;</span>
+            !(fdef.returnType instanceof VoidType)) {
+<span class="fc" id="L76">            throw new TypeErrorException(&quot;Missing return in &quot; + fdef.name.toString());</span>
+        }
+<span class="fc" id="L78">    }</span>
+        private static Map&lt;Variable, Type&gt; initialVariableMapping(final VariableDeclaration[] parameters) throws TypeErrorException {
+<span class="fc" id="L80">        final Map&lt;Variable, Type&gt; result = new HashMap&lt;Variable, Type&gt;();</span>
+
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (final VariableDeclaration dec : parameters) {</span>
+<span class="fc" id="L83">            result.put(dec.variable, dec.type);</span>
+        }
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (result.size() != parameters.length) {</span>
+<span class="fc" id="L87">            throw new TypeErrorException(&quot;Duplicate variable name in function parameters&quot;);</span>
+        }
+
+<span class="fc" id="L90">        return result;</span>
+    }
+    
+    // intended for testing
+    public static Type expTypeForTesting(final Exp exp) throws TypeErrorException {
+<span class="fc" id="L95">        final Typechecker checker =</span>
+            new Typechecker(new Program(new FunctionDefinition[0]));
+<span class="fc" id="L97">        return checker.expTypeNoScopeForTesting(exp);</span>
+    }
+    
+    public static void typecheckProgram(final Program program) throws TypeErrorException {
+<span class="fc" id="L101">        new Typechecker(program);</span>
+<span class="fc" id="L102">    }</span>
+    
+    // not permitted to have multiple functions with the same name
+    private Map&lt;FunctionName, Pair&lt;Type[], Type&gt;&gt;
+        makeFunctionMapping(final FunctionDefinition[] functions) throws TypeErrorException {
+
+<span class="fc" id="L108">        final Map&lt;FunctionName, Pair&lt;Type[], Type&gt;&gt; result =</span>
+            new HashMap&lt;FunctionName, Pair&lt;Type[], Type&gt;&gt;();
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (final FunctionDefinition def : functions) {</span>
+<span class="fc" id="L112">            final Type[] parameters = parameterTypes(def.parameters);</span>
+<span class="fc" id="L113">            final Pair&lt;Type[], Type&gt; value =</span>
+                new Pair&lt;Type[], Type&gt;(parameters, def.returnType);
+<span class="fc" id="L115">            result.put(def.name, value);</span>
+        }
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (result.size() != functions.length) {</span>
+<span class="fc" id="L119">            throw new TypeErrorException(&quot;Duplicate function name&quot;);</span>
+        }
+
+<span class="fc" id="L122">        return result;</span>
+    }
+
+    // throws exception if any are void
+    private Type[] parameterTypes(final VariableDeclaration[] vars) throws TypeErrorException {
+<span class="fc" id="L127">        final Type[] result = new Type[vars.length];</span>
+
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int index = 0; index &lt; vars.length; index++) {</span>
+<span class="fc" id="L130">            final Type current = vars[index].type;</span>
+            //ensureValidType(current);
+<span class="fc" id="L132">            ensureNonVoidType(current);</span>
+<span class="fc" id="L133">            result[index] = current;</span>
+        }
+
+<span class="fc" id="L136">        return result;</span>
+    }
+
+    
+            
+    private static void ensureNonVoidType(final Type type) throws TypeErrorException {
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (type instanceof VoidType) {</span>
+<span class="fc" id="L143">            throw new TypeErrorException(&quot;Void type illegal here&quot;);</span>
+        }
+<span class="fc" id="L145">    }</span>
+    
+   // returns the return type
+    private Type checkFunctionCall(final FunctionName name,
+                                   final Type[] parameterTypes) throws TypeErrorException {
+<span class="fc" id="L150">        final Pair&lt;Type[], Type&gt; expected = functionDefs.get(name);</span>
+
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (expected != null) {</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">            if (parameterTypes.length == expected.first.length) {</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                for (int index = 0; index &lt; parameterTypes.length; index++) {</span>
+<span class="fc" id="L155">                    ensureTypesSame(expected.first[index], parameterTypes[index]);</span>
+                }
+<span class="fc" id="L157">                return expected.second;</span>
+            } else {
+<span class="fc" id="L159">                throw new TypeErrorException(&quot;Function &quot; + name.toString() +</span>
+                                             &quot; has arity &quot; + expected.first.length +
+                                             &quot;; was called with &quot; +
+                                             parameterTypes.length + &quot; parameters&quot;);
+            }
+        } else {
+<span class="fc" id="L165">            throw new TypeErrorException(&quot;No such function defined: &quot; + name.toString());</span>
+        }
+    } // checkFunctionCall
+    
+    private static void ensureTypesSame(final Type expected, final Type received) throws TypeErrorException {
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        if (!expected.equals(received)) {</span>
+<span class="fc" id="L171">            throw new TypeErrorException(expected, received);</span>
+        }
+<span class="fc" id="L173">    }</span>
+
+    private static Type binopType(final Type left, final Op op, final Type right) throws TypeErrorException {
+<span class="fc" id="L176">        final IntType intType = new IntType();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (op instanceof PlusOp) {</span>
+            // TWO kinds are permitted:
+            // int + int: returns int
+            // pointer + int: returns same pointer type
+            //
+            // in both cases, the right side is an int
+<span class="fc" id="L183">            ensureTypesSame(intType, right);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (left instanceof IntType) {</span>
+                // int + int returns int
+<span class="fc" id="L186">                return intType;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            } else if (left instanceof PointerType) {</span>
+<span class="fc" id="L188">                return left;</span>
+            } else {
+<span class="fc" id="L190">                throw new TypeErrorException(&quot;invalid lhs for +: &quot; + left.toString());</span>
+            }
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">        } else if (op instanceof EqualsOp) {</span>
+            // type == type = boolean
+            // both need to be of the same type
+<span class="fc" id="L195">            ensureTypesSame(left, right);</span>
+<span class="fc" id="L196">            return new BoolType();</span>
+        } else {
+            // should be no other operators
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            assert(false);</span>
+<span class="nc" id="L200">            throw new TypeErrorException(&quot;Unknown operator: &quot; + op.toString());</span>
+        }
+    } // binopType
+
+    // intended for testing
+    private Type expTypeNoScopeForTesting(final Exp exp) throws TypeErrorException {
+<span class="fc" id="L206">        return new InScope(new VoidType(),</span>
+                           new HashMap&lt;Variable, Type&gt;(),
+<span class="fc" id="L208">                           false).typeofExp(exp);</span>
+    }
+    
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">    private class InScope {</span>
+        // return type of the function we are currently in
+        private final Type returnType;
+        // maps variables in scope to their corresponding type
+        private final Map&lt;Variable, Type&gt; inScope;
+        // records if we are in a while loop or not
+        private final boolean inWhile;
+
+        public InScope(final Type returnType,
+                       final Map&lt;Variable, Type&gt; inScope,
+<span class="fc" id="L221">                       final boolean inWhile) {</span>
+<span class="fc" id="L222">            this.returnType = returnType;</span>
+<span class="fc" id="L223">            this.inScope = inScope;</span>
+<span class="fc" id="L224">            this.inWhile = inWhile;</span>
+<span class="fc" id="L225">        }</span>
+
+        private InScope addVariable(final Variable variable,
+                                    final Type variableType) {
+<span class="fc" id="L229">            final Map&lt;Variable, Type&gt; copy =</span>
+                new HashMap&lt;Variable, Type&gt;(inScope);
+<span class="fc" id="L231">            copy.put(variable, variableType);</span>
+<span class="fc" id="L232">            return new InScope(returnType, copy, inWhile);</span>
+        }
+
+        private InScope setInWhile() {
+<span class="fc" id="L236">            return new InScope(returnType, inScope, true);</span>
+        }
+        
+        
+
+        private Type typeofDereference(final Type maybePointerType) throws TypeErrorException {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">            if (maybePointerType instanceof PointerType) {</span>
+                // dereferencing a pointer yields whatever its underlying type is
+<span class="fc" id="L244">                return ((PointerType)maybePointerType).pointsTo;</span>
+            } else {
+<span class="fc" id="L246">                throw new TypeErrorException(&quot;Expected pointer type; received: &quot; +</span>
+<span class="fc" id="L247">                                             maybePointerType.toString());</span>
+            }
+        }
+        
+        private Type typeofLhs(final Lhs lhs) throws TypeErrorException {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            if (lhs instanceof VariableLhs) {</span>
+<span class="fc" id="L253">                return lookupVariable(((VariableLhs)lhs).variable);</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">            } else if (lhs instanceof DereferenceLhs) {</span>
+<span class="fc" id="L255">                final Type nestedType =</span>
+<span class="fc" id="L256">                    typeofLhs(((DereferenceLhs)lhs).lhs);</span>
+<span class="fc" id="L257">                return typeofDereference(nestedType);</span>
+            } else {
+<span class="nc bnc" id="L259" title="All 2 branches missed.">                assert(false);</span>
+<span class="nc" id="L260">                throw new TypeErrorException(&quot;Unknown lhs: &quot; +lhs.toString());</span>
+            }
+        }
+                    
+        private Type[] typeofExps(final Exp[] exps) throws TypeErrorException {
+<span class="fc" id="L265">            final Type[] types = new Type[exps.length];</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">            for (int index = 0; index &lt; exps.length; index++) {</span>
+<span class="fc" id="L267">                types[index] = typeofExp(exps[index]);</span>
+            }
+<span class="fc" id="L269">            return types;</span>
+        }
+
+        // Look up the type of the variable.
+        // If it's not present in the map, then it's not in scope.
+        private Type lookupVariable(final Variable var) throws TypeErrorException {
+<span class="fc" id="L275">            final Type varType = inScope.get(var);</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">            if (varType == null) {</span>
+<span class="fc" id="L277">                throw new TypeErrorException(&quot;Variable not in scope: &quot; + var);</span>
+            }
+<span class="fc" id="L279">            return varType;</span>
+        }
+        
+        public Type typeofExp(final Exp exp) throws TypeErrorException {
+<span class="fc bfc" id="L283" title="All 2 branches covered.">            if (exp instanceof IntExp) {</span>
+<span class="fc" id="L284">                return new IntType();</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">            } else if (exp instanceof CharExp) {</span>
+<span class="fc" id="L286">                return new CharType();</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">            } else if (exp instanceof BoolExp) {</span>
+<span class="fc" id="L288">                return new BoolType();</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">            } else if (exp instanceof VariableExp) {</span>
+<span class="fc" id="L290">                return lookupVariable(((VariableExp)exp).variable);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            } else if (exp instanceof BinopExp) {</span>
+                // the return type and expected parameter types all depend
+                // on the operator.  In all cases, we need to get the types
+                // of the operands, and then check if this matches with the
+                // operator
+<span class="fc" id="L296">                final BinopExp asBinop = (BinopExp)exp;</span>
+<span class="fc" id="L297">                final Type leftType = typeofExp(asBinop.left);</span>
+<span class="fc" id="L298">                final Type rightType = typeofExp(asBinop.right);</span>
+<span class="fc" id="L299">                return binopType(leftType, asBinop.op, rightType);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            }else if (exp instanceof FunctionCallExp) {</span>
+<span class="fc" id="L301">                final FunctionCallExp asCall = (FunctionCallExp)exp;</span>
+<span class="fc" id="L302">                return checkFunctionCall(asCall.name,</span>
+<span class="fc" id="L303">                                         typeofExps(asCall.parameters));</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">            } else if (exp instanceof CastExp) {</span>
+                // Explicit cast.  Trust the user.  Ideally, we'd check
+                // this at runtime.  We still need to look at the expression
+                // to make sure that this is itself well-typed.
+<span class="fc" id="L308">                final CastExp asCast = (CastExp)exp;</span>
+<span class="fc" id="L309">                typeofExp(asCast.exp);</span>
+<span class="fc" id="L310">                return asCast.type;</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">            } else if (exp instanceof AddressOfExp) {</span>
+<span class="fc" id="L312">                final Type nested = typeofLhs(((AddressOfExp)exp).lhs);</span>
+                // point to this now
+<span class="fc" id="L314">                return new PointerType(nested);</span>
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">            } else if (exp instanceof DereferenceExp) {</span>
+<span class="fc" id="L316">                final Type nested = typeofExp(((DereferenceExp)exp).exp);</span>
+<span class="fc" id="L317">                return typeofDereference(nested);</span>
+            } else {
+<span class="nc bnc" id="L319" title="All 2 branches missed.">                assert(false);</span>
+<span class="nc" id="L320">                throw new TypeErrorException(&quot;Unrecognized expression: &quot; + exp.toString());</span>
+            }
+        } // typeofExp
+
+        // returns any new scope to use, along with whether or not return was observed on
+        // all paths
+        public Pair&lt;InScope, Boolean&gt; typecheckStmt(final Stmt stmt) throws TypeErrorException {
+<span class="fc bfc" id="L327" title="All 2 branches covered.">            if (stmt instanceof IfStmt) {</span>
+<span class="fc" id="L328">                final IfStmt asIf = (IfStmt)stmt;</span>
+<span class="fc" id="L329">                ensureTypesSame(new BoolType(), typeofExp(asIf.guard));</span>
+
+                // since the true and false branches form their own blocks, we
+                // don't care about any variables they put in scope
+<span class="fc" id="L333">                final Pair&lt;InScope, Boolean&gt; leftResult = typecheckStmt(asIf.ifTrue);</span>
+<span class="fc" id="L334">                final Pair&lt;InScope, Boolean&gt; rightResult = typecheckStmt(asIf.ifFalse);</span>
+<span class="fc" id="L335">                final boolean returnOnBoth =</span>
+<span class="fc bfc" id="L336" title="All 4 branches covered.">                    leftResult.second.booleanValue() &amp;&amp; rightResult.second.booleanValue();</span>
+<span class="fc" id="L337">                return new Pair&lt;InScope, Boolean&gt;(this, returnOnBoth);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">            } else if (stmt instanceof WhileStmt) {</span>
+<span class="fc" id="L339">                final WhileStmt asWhile = (WhileStmt)stmt;</span>
+<span class="fc" id="L340">                ensureTypesSame(new BoolType(), typeofExp(asWhile.guard));</span>
+
+                // Don't care about variables in the while.
+                // Because the body of the while loop will never execute if the condition is
+                // initially false, even if all paths in the while loop have return, this doesn't
+                // mean that we are guaranteed to hit return.
+<span class="fc" id="L346">                setInWhile().typecheckStmt(asWhile.body);</span>
+<span class="fc" id="L347">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(false));</span>
+<span class="fc bfc" id="L348" title="All 4 branches covered.">            } else if (stmt instanceof BreakStmt ||</span>
+                       stmt instanceof ContinueStmt) {
+<span class="fc bfc" id="L350" title="All 2 branches covered.">                if (!inWhile) {</span>
+<span class="fc" id="L351">                    throw new TypeErrorException(&quot;Break or continue outside of loop&quot;);</span>
+                }
+<span class="fc" id="L353">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(false));</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">            } else if (stmt instanceof VariableDeclarationInitializationStmt) {</span>
+<span class="fc" id="L355">                final VariableDeclarationInitializationStmt dec =</span>
+                    (VariableDeclarationInitializationStmt)stmt;
+<span class="fc" id="L357">                final Type expectedType = dec.varDec.type;</span>
+<span class="fc" id="L358">                ensureNonVoidType(expectedType);</span>
+                //ensureValidType(expectedType);
+<span class="fc" id="L360">                ensureTypesSame(expectedType,</span>
+<span class="fc" id="L361">                                typeofExp(dec.exp));</span>
+<span class="fc" id="L362">                final InScope resultInScope =</span>
+<span class="fc" id="L363">                    addVariable(dec.varDec.variable, expectedType);</span>
+<span class="fc" id="L364">                return new Pair&lt;InScope, Boolean&gt;(resultInScope, Boolean.valueOf(false));</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">            } else if (stmt instanceof AssignmentStmt) {</span>
+<span class="fc" id="L366">                final AssignmentStmt asAssign = (AssignmentStmt)stmt;</span>
+<span class="fc" id="L367">                ensureTypesSame(typeofLhs(asAssign.lhs),</span>
+<span class="fc" id="L368">                                typeofExp(asAssign.exp));</span>
+<span class="fc" id="L369">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(false));</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">            } else if (stmt instanceof ReturnVoidStmt) {</span>
+<span class="fc" id="L371">                ensureTypesSame(new VoidType(), returnType);</span>
+<span class="fc" id="L372">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(true));</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">            } else if (stmt instanceof ReturnExpStmt) {</span>
+<span class="fc" id="L374">                final Type receivedType = typeofExp(((ReturnExpStmt)stmt).exp);</span>
+<span class="fc" id="L375">                ensureTypesSame(returnType, receivedType);</span>
+<span class="fc" id="L376">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(true));</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">            } else if (stmt instanceof FreeStmt) {</span>
+<span class="pc" id="L378">                ensureTypesSame(new PointerType(new VoidType()),</span>
+<span class="fc" id="L379">                                typeofExp(((FreeStmt)stmt).value));</span>
+<span class="nc" id="L380">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(false));</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">            } else if (stmt instanceof SequenceStmt) {</span>
+<span class="fc" id="L382">                final SequenceStmt asSeq = (SequenceStmt)stmt;</span>
+<span class="fc" id="L383">                final Pair&lt;InScope, Boolean&gt; fromLeft = typecheckStmt(asSeq.first);</span>
+                
+<span class="fc bfc" id="L385" title="All 2 branches covered.">                if (fromLeft.second.booleanValue()) {</span>
+<span class="fc" id="L386">                    throw new TypeErrorException(&quot;Dead code from early return&quot;);</span>
+                }
+
+<span class="fc" id="L389">                return fromLeft.first.typecheckStmt(asSeq.second);</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">            } else if (stmt instanceof ExpStmt) {</span>
+                // Just need to check that it's well-typed.  Permitted to
+                // return anything.
+<span class="fc" id="L393">                typeofExp(((ExpStmt)stmt).exp);</span>
+<span class="fc" id="L394">                return new Pair&lt;InScope, Boolean&gt;(this, Boolean.valueOf(false));</span>
+            } else {
+<span class="nc bnc" id="L396" title="All 2 branches missed.">                assert(false);</span>
+<span class="nc" id="L397">                throw new TypeErrorException(&quot;Unrecognized statement: &quot; + stmt.toString());</span>
+            }
+        } // typecheckStmt
+    } // InScope
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

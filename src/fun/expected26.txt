@@ -1,0 +1,52 @@
+.data
+newline:
+    .asciiz "\n"
+.text
+main:
+$REAL_MAIN0:
+    jal main0
+    li $v0, 10
+    syscall
+main0:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    li $t0, 1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    li $t0, 2
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    jal foo0
+    lw $a0, 0($sp)
+    addi $sp, $sp, 4
+    li $v0, 1
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    jr $ra
+foo0:
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    lw $t0, 8($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    lw $t0, 8($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    lw $t1, 0($sp)
+    addi $sp, $sp, 4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    add $t0, $t0, $t1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $ra, 4($sp)
+    lw $t0, 0($sp)
+    sw $t0, 12($sp)
+    addi $sp, $sp, 12
+    jr $ra
+    li $v0, 10
+    syscall

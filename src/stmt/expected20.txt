@@ -1,0 +1,36 @@
+.data
+newline:
+    .asciiz "\n"
+.text
+main:
+    li $t0, 1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    beq $t0, $zero, TEST_if_false_start0
+    li $t0, 1
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $a0, 0($sp)
+    addi $sp, $sp, 4
+    li $v0, 1
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+    j TEST_if_false_end1
+TEST_if_false_start0:
+    li $t0, 2
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $a0, 0($sp)
+    addi $sp, $sp, 4
+    li $v0, 1
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+TEST_if_false_end1:
+    li $v0, 10
+    syscall

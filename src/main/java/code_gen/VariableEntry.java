@@ -1,7 +1,7 @@
 package code_gen;
 
-import syntax.Variable;
-import syntax.Type;
+import code_gen_syntax.Variable;
+import code_gen_syntax.Type;
 
 public class VariableEntry {
     public final Variable variable;

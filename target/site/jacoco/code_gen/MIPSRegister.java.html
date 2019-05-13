@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MIPSRegister.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CminusCompiler</a> &gt; <a href="index.source.html" class="el_package">code_gen</a> &gt; <span class="el_source">MIPSRegister.java</span></div><h1>MIPSRegister.java</h1><pre class="source lang-java linenums">package code_gen;
+
+<span class="fc" id="L3">public enum MIPSRegister {</span>
+<span class="fc" id="L4">    ZERO(0, &quot;zero&quot;),</span>
+<span class="fc" id="L5">    AT(1, &quot;at&quot;),</span>
+<span class="fc" id="L6">    V0(2, &quot;v0&quot;),</span>
+<span class="fc" id="L7">    V1(3, &quot;v1&quot;),</span>
+<span class="fc" id="L8">    A0(4, &quot;a0&quot;),</span>
+<span class="fc" id="L9">    A1(5, &quot;a1&quot;),</span>
+<span class="fc" id="L10">    A2(6, &quot;a2&quot;),</span>
+<span class="fc" id="L11">    A3(7, &quot;a3&quot;),</span>
+<span class="fc" id="L12">    T0(8, &quot;t0&quot;),</span>
+<span class="fc" id="L13">    T1(9, &quot;t1&quot;),</span>
+<span class="fc" id="L14">    T2(10, &quot;t2&quot;),</span>
+<span class="fc" id="L15">    T3(11, &quot;t3&quot;),</span>
+<span class="fc" id="L16">    T4(12, &quot;t4&quot;),</span>
+<span class="fc" id="L17">    T5(13, &quot;t5&quot;),</span>
+<span class="fc" id="L18">    T6(14, &quot;t6&quot;),</span>
+<span class="fc" id="L19">    T7(15, &quot;t7&quot;),</span>
+<span class="fc" id="L20">    S0(16, &quot;s0&quot;),</span>
+<span class="fc" id="L21">    S1(17, &quot;s1&quot;),</span>
+<span class="fc" id="L22">    S2(18, &quot;s2&quot;),</span>
+<span class="fc" id="L23">    S3(19, &quot;s3&quot;),</span>
+<span class="fc" id="L24">    S4(20, &quot;s4&quot;),</span>
+<span class="fc" id="L25">    S5(21, &quot;s5&quot;),</span>
+<span class="fc" id="L26">    S6(22, &quot;s6&quot;),</span>
+<span class="fc" id="L27">    S7(23, &quot;s7&quot;),</span>
+<span class="fc" id="L28">    T8(24, &quot;t8&quot;),</span>
+<span class="fc" id="L29">    T9(25, &quot;t9&quot;),</span>
+<span class="fc" id="L30">    K0(26, &quot;k0&quot;),</span>
+<span class="fc" id="L31">    K1(27, &quot;k1&quot;),</span>
+<span class="fc" id="L32">    GP(28, &quot;gp&quot;),</span>
+<span class="fc" id="L33">    SP(29, &quot;sp&quot;),</span>
+<span class="fc" id="L34">    FP(30, &quot;fp&quot;),</span>
+<span class="fc" id="L35">    RA(31, &quot;ra&quot;);</span>
+
+    public final int registerNumber;
+    public final String baseRegisterName;
+
+    MIPSRegister(final int registerNumber,
+<span class="fc" id="L41">                 final String baseRegisterName) {</span>
+<span class="fc" id="L42">        this.registerNumber = registerNumber;</span>
+<span class="fc" id="L43">        this.baseRegisterName = baseRegisterName;</span>
+<span class="fc" id="L44">    }</span>
+
+    public String toString() {
+<span class="fc" id="L47">        return &quot;$&quot; + baseRegisterName;</span>
+    }
+} // MIPSRegister
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

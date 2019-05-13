@@ -1,0 +1,28 @@
+.data
+newline:
+    .asciiz "\n"
+.text
+main:
+    li $t0, 5
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    addi $t0, $sp, 0
+    addi $sp, $sp, -4
+    sw $t0, 0($sp)
+    lw $t0, 0($sp)
+    sw $t0, -4($sp)
+    addi $sp, $sp, -4
+    lw $t0, 0($sp)
+    addi $sp, $sp, 4
+    addi $sp, $sp, -4
+    lw $t1, 0($t0)
+    sw $t1, 0($sp)
+    lw $a0, 0($sp)
+    addi $sp, $sp, 4
+    li $v0, 1
+    syscall
+    li $v0, 4
+    la $a0, newline
+    syscall
+    li $v0, 10
+    syscall

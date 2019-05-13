@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MIPSCodeGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CminusCompiler</a> &gt; <a href="index.source.html" class="el_package">code_gen</a> &gt; <span class="el_source">MIPSCodeGenerator.java</span></div><h1>MIPSCodeGenerator.java</h1><pre class="source lang-java linenums">package code_gen;
+
+import code_gen_syntax.StructureType;
+import code_gen_syntax.IntType;
+import code_gen_syntax.AssignmentStmt;
+import code_gen_syntax.BoolType;
+import code_gen_syntax.BinopExp;
+import code_gen_syntax.MinusOp;
+import code_gen_syntax.WhileStmt;
+import code_gen_syntax.SequenceStmt;
+import code_gen_syntax.FunctionCallStmt;
+import code_gen_syntax.BoolExp;
+import code_gen_syntax.FunctionCallExp;
+import code_gen_syntax.BreakStmt;
+import code_gen_syntax.PrintStmt;
+import code_gen_syntax.VariableExp;
+import code_gen_syntax.EqualsOp;
+import code_gen_syntax.VariableDeclaration;
+import code_gen_syntax.PlusOp;
+import code_gen_syntax.ReturnVoidStmt;
+import code_gen_syntax.Variable;
+import code_gen_syntax.Type;
+import code_gen_syntax.IntExp;
+import code_gen_syntax.IfStmt;
+import code_gen_syntax.ReturnExpStmt;
+import code_gen_syntax.VoidType;
+import code_gen_syntax.FieldName;
+import code_gen_syntax.LessThanOp;
+import code_gen_syntax.Exp;
+import code_gen_syntax.Op;
+import code_gen_syntax.DereferenceExp;
+import code_gen_syntax.SizeofExp;
+import code_gen_syntax.VariableLhs;
+import code_gen_syntax.VariableDeclarationInitializationStmt;
+import code_gen_syntax.Stmt;
+import code_gen_syntax.AddressOfExp;
+import code_gen_syntax.DereferenceLhs;
+import code_gen_syntax.PointerType;
+import code_gen_syntax.FunctionName;
+import code_gen_syntax.FunctionDefinition;
+import code_gen_syntax.Lhs;
+import code_gen_syntax.StructureName;
+
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
+
+// MIPS documentation:
+// - MIPS reference card: https://inst.eecs.berkeley.edu/~cs61c/resources/MIPS_Green_Sheet.pdf
+// - MIPS system calls: https://www.doc.ic.ac.uk/lab/secondyear/spim/node8.html
+//
+// You will need SPIM (http://spimsimulator.sourceforge.net/) installed to run this; spim is
+// usually available as a binary package though your distribution / Homebrew
+//
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">public class MIPSCodeGenerator {</span>
+    // ---BEGIN CONSTANTS---
+    // placeholder variable for return addresses
+<span class="fc" id="L66">    public static final Variable RA_VARIABLE = new Variable(&quot;$ra&quot;);</span>
+<span class="fc" id="L67">    public static final FunctionName REAL_MAIN = new FunctionName(&quot;$REAL_MAIN&quot;);</span>
+    // ---END CONSTANTS
+
+    // ---BEGIN INSTANCE VARIABLES---
+    private final Map&lt;StructureName, LinkedHashMap&lt;FieldName, Type&gt;&gt; structDecs;
+    private final Map&lt;FunctionName, FunctionDefinition&gt; functionDefs;
+    private final List&lt;MIPSEntry&gt; entries;
+    private final VariableTable variables;
+    private FunctionName currentFunction;
+    private int expressionOffset;
+    private int ifCounter;
+    private int whileCounter;
+    private MIPSLabel currentWhileStart;
+    private MIPSLabel currentWhileEnd;
+    private VariableTableResetPoint currentWhileReset;
+    // ---END INSTANCE VARIABLES
+    
+    public MIPSCodeGenerator(final Map&lt;StructureName, LinkedHashMap&lt;FieldName, Type&gt;&gt; structDecs,
+<span class="fc" id="L85">                             final Map&lt;FunctionName, FunctionDefinition&gt; functionDefs) {</span>
+<span class="fc" id="L86">        this.structDecs = structDecs;</span>
+<span class="fc" id="L87">        this.functionDefs = functionDefs;</span>
+<span class="fc" id="L88">        entries = new ArrayList&lt;MIPSEntry&gt;();</span>
+<span class="fc" id="L89">        variables = new VariableTable();</span>
+<span class="fc" id="L90">        expressionOffset = 0;</span>
+<span class="fc" id="L91">        currentFunction = null;</span>
+<span class="fc" id="L92">        ifCounter = 0;</span>
+<span class="fc" id="L93">        whileCounter = 0;</span>
+<span class="fc" id="L94">        currentWhileStart = null;</span>
+<span class="fc" id="L95">        currentWhileEnd = null;</span>
+<span class="fc" id="L96">        currentWhileReset = null;</span>
+<span class="fc" id="L97">    }</span>
+
+    // specifically used in statement contexts, when a statement finishes evaluating an
+    // expression inside
+    private void resetExpressionOffset() {
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">        assert(expressionOffset &gt;= 0);</span>
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">        assert(expressionOffset % 4 == 0);</span>
+<span class="fc" id="L104">        expressionOffset = 0;</span>
+<span class="fc" id="L105">    }</span>
+
+    public static boolean containsReturn(final Stmt stmt) {
+<span class="pc bpc" id="L108" title="4 of 10 branches missed.">        if (stmt instanceof VariableDeclarationInitializationStmt ||</span>
+            stmt instanceof AssignmentStmt ||
+            stmt instanceof PrintStmt ||
+            stmt instanceof FunctionCallStmt ||
+            stmt instanceof BreakStmt) {
+<span class="fc" id="L113">            return false;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        } else if (stmt instanceof SequenceStmt) {</span>
+<span class="nc" id="L115">            final SequenceStmt asSeq = (SequenceStmt)stmt;</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">            return containsReturn(asSeq.first) || containsReturn(asSeq.second);</span>
+<span class="pc bpc" id="L117" title="1 of 4 branches missed.">        } else if (stmt instanceof ReturnVoidStmt ||</span>
+                   stmt instanceof ReturnExpStmt) {
+<span class="fc" id="L119">            return true;</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        } else if (stmt instanceof IfStmt) {</span>
+<span class="fc" id="L121">            final IfStmt asIf = (IfStmt)stmt;</span>
+<span class="pc bpc" id="L122" title="3 of 4 branches missed.">            return containsReturn(asIf.ifTrue) || containsReturn(asIf.ifFalse);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        } else if (stmt instanceof WhileStmt) {</span>
+<span class="nc" id="L124">            return containsReturn(((WhileStmt)stmt).body);</span>
+        } else {
+<span class="nc bnc" id="L126" title="All 2 branches missed.">            assert(false);</span>
+<span class="nc" id="L127">            return false;</span>
+        }
+    }
+
+    private void doReturn() {
+        // the stack looks like the following at this point:
+        //
+        // before_call
+        // argument1
+        // argument2
+        // ...
+        // argumentN
+        // return_address
+        // local_variable_1
+        // local_variable_2
+        // ...
+        // local_variable_N
+        // return_value
+        //
+        //
+        // we need to adjust it so it looks like the following:
+        //
+        // before_call
+        // return_value
+        //
+        // SP_before_call = SP_current + sizeof(allVariables) + expressionOffset
+        // finalSP = SP_current + sizeof(allVariables)
+        //
+
+        
+        // save return value in a register
+<span class="fc" id="L158">        final int raOffset = variables.variableOffset(RA_VARIABLE) + expressionOffset;</span>
+<span class="fc" id="L159">        final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="fc" id="L160">        final MIPSRegister ra = MIPSRegister.RA;</span>
+<span class="fc" id="L161">        add(new Lw(ra, raOffset, sp));</span>
+
+        // copy return value to correct place
+<span class="fc" id="L164">        final int sizeOfAllVariables = variables.totalSizeOfAllVariables();</span>
+<span class="fc" id="L165">        final int copyReturnValueToOffset =</span>
+            sizeOfAllVariables + expressionOffset;
+<span class="fc" id="L167">        int copyFrom = expressionOffset - 4;</span>
+<span class="fc" id="L168">        int copyTo = copyReturnValueToOffset - 4;</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        while (copyFrom &gt;= 0) {</span>
+<span class="fc" id="L170">            final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L171">            add(new Lw(t0, copyFrom, sp));</span>
+<span class="fc" id="L172">            add(new Sw(t0, copyTo, sp));</span>
+<span class="fc" id="L173">            copyFrom -= 4;</span>
+<span class="fc" id="L174">            copyTo -= 4;</span>
+<span class="fc" id="L175">        }</span>
+
+        // Put sp at final position
+<span class="fc" id="L178">        add(new Addi(sp, sp, sizeOfAllVariables));</span>
+
+        // do the return
+<span class="fc" id="L181">        add(new Jr(ra));</span>
+<span class="fc" id="L182">    }</span>
+
+    // will create a wrapper that calls this function and then exits
+    public void compileMainFunctionDefinition(final FunctionDefinition def) {
+<span class="pc bpc" id="L186" title="2 of 4 branches missed.">        assert(def.returnType.equals(new VoidType()));</span>
+<span class="pc bpc" id="L187" title="2 of 4 branches missed.">        assert(def.name.name.equals(&quot;main&quot;));</span>
+<span class="pc bpc" id="L188" title="2 of 4 branches missed.">        assert(def.parameters.length == 0);</span>
+
+        // call into the user's main and then exit
+<span class="fc" id="L191">        add(functionNameToLabel(REAL_MAIN));</span>
+<span class="fc" id="L192">        compileFunctionCallExp(new FunctionCallExp(def.name, new Exp[0]));</span>
+<span class="fc" id="L193">        mainEnd();</span>
+        
+<span class="fc" id="L195">        compileFunctionDefinition(def);</span>
+<span class="fc" id="L196">    }</span>
+    
+    public void compileFunctionDefinition(final FunctionDefinition def) {
+<span class="pc bpc" id="L199" title="2 of 4 branches missed.">        assert(expressionOffset == 0);</span>
+<span class="pc bpc" id="L200" title="2 of 4 branches missed.">        assert(variables.isEmpty());</span>
+<span class="pc bpc" id="L201" title="2 of 4 branches missed.">        assert(currentFunction == null);</span>
+
+<span class="fc" id="L203">        currentFunction = def.name;</span>
+<span class="fc" id="L204">        add(functionNameToLabel(def.name));</span>
+        
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (final VariableDeclaration param : def.parameters) {</span>
+<span class="fc" id="L207">            variables.pushVariable(param.variable,</span>
+                                   param.type,
+<span class="fc" id="L209">                                   sizeof(param.type));</span>
+        }
+
+        // return address always follows parameters
+        // we treat this like a special variable
+<span class="fc" id="L214">        push(MIPSRegister.RA);</span>
+<span class="fc" id="L215">        variables.pushVariable(RA_VARIABLE,</span>
+                               new PointerType(new VoidType()), // meaningless
+                               4);
+<span class="fc" id="L218">        resetExpressionOffset();</span>
+<span class="fc" id="L219">        compileStatement(def.body);</span>
+<span class="pc bpc" id="L220" title="2 of 4 branches missed.">        assert(expressionOffset == 0);</span>
+
+        // return will handle putting the return value on the stack
+        // return is not always requires, so see if we need to put one here
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (!containsReturn(def.body)) {</span>
+<span class="fc" id="L225">            doReturn();</span>
+        }
+<span class="fc" id="L227">        variables.clear();</span>
+<span class="fc" id="L228">        currentFunction = null;</span>
+<span class="fc" id="L229">    }</span>
+
+    private MIPSLabel freshIfLabel(final String baseName) {
+<span class="fc" id="L232">        return new MIPSLabel(currentFunction.name + &quot;_if_&quot; + baseName, ifCounter++);</span>
+    }
+
+    private MIPSLabel freshWhileLabel(final String baseName) {
+<span class="fc" id="L236">        return new MIPSLabel(currentFunction.name + &quot;_while_&quot; + baseName, whileCounter++);</span>
+    }
+    
+    public void compileIfStmt(final IfStmt stmt) {
+<span class="fc" id="L240">        compileExpression(stmt.guard);</span>
+
+        // Guaranteed that guard is a boolean, from the typechecker.
+        // Put it in t0.
+<span class="pc bpc" id="L244" title="2 of 4 branches missed.">        assert(expressionOffset == 4);</span>
+<span class="fc" id="L245">        final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L246">        pop(t0);</span>
+
+        // If it's false, make a jump.  If it's true, fall through to true branch.
+        // True branch needs to jump to after the false, which ends the if/else
+<span class="fc" id="L250">        final MIPSLabel falseStart = freshIfLabel(&quot;false_start&quot;);</span>
+<span class="fc" id="L251">        final MIPSLabel falseEnd = freshIfLabel(&quot;false_end&quot;);</span>
+<span class="fc" id="L252">        add(new Beq(t0, MIPSRegister.ZERO, falseStart));</span>
+
+<span class="fc" id="L254">        compileStatementInNestedScope(false, stmt.ifTrue);</span>
+<span class="fc" id="L255">        add(new J(falseEnd));</span>
+<span class="fc" id="L256">        add(falseStart);</span>
+<span class="fc" id="L257">        compileStatementInNestedScope(false, stmt.ifFalse);</span>
+<span class="fc" id="L258">        add(falseEnd);</span>
+<span class="fc" id="L259">    }</span>
+
+    private void freeSizeForVariables(final int size) {
+<span class="pc bpc" id="L262" title="2 of 4 branches missed.">        assert(size &gt;= 0);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if (size &gt; 0) {</span>
+<span class="fc" id="L264">            final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="fc" id="L265">            add(new Addi(sp, sp, size));</span>
+        }
+<span class="fc" id="L267">    }</span>
+    
+    private void compileStatementInNestedScope(final boolean isWhile, final Stmt stmt) {
+<span class="fc" id="L270">        final VariableTableResetPoint oldWhileReset = currentWhileReset;</span>
+<span class="fc" id="L271">        final VariableTableResetPoint reset = variables.makeResetPoint();</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        if (isWhile) {</span>
+<span class="fc" id="L273">            currentWhileReset = reset;</span>
+        }
+<span class="fc" id="L275">        compileStatement(stmt);</span>
+<span class="fc" id="L276">        freeSizeForVariables(variables.resetTo(reset));</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        if (isWhile) {</span>
+<span class="fc" id="L278">            currentWhileReset = oldWhileReset;</span>
+        }
+<span class="fc" id="L280">    }</span>
+    
+    public void compileVariableDeclarationInitializationStmt(final VariableDeclarationInitializationStmt stmt) {
+<span class="fc" id="L283">        compileExpression(stmt.exp);</span>
+<span class="fc" id="L284">        resetExpressionOffset();</span>
+<span class="fc" id="L285">        final VariableDeclaration dec = stmt.varDec;</span>
+        // variable's value is now on top of stack
+<span class="fc" id="L287">        variables.pushVariable(dec.variable,</span>
+                               dec.type,
+<span class="fc" id="L289">                               sizeof(dec.type));</span>
+<span class="fc" id="L290">    }</span>
+
+    public void compileSequenceStmt(final SequenceStmt stmt) {
+<span class="fc" id="L293">        compileStatement(stmt.first);</span>
+<span class="fc" id="L294">        compileStatement(stmt.second);</span>
+<span class="fc" id="L295">    }</span>
+
+    public int variableOffset(final Variable variable) {
+<span class="fc" id="L298">        return variables.variableOffset(variable) + expressionOffset;</span>
+    }
+    
+    public void putLhsAddressIntoRegister(final MIPSRegister destination,
+                                          final Lhs lhs) {
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (lhs instanceof VariableLhs) {</span>
+<span class="fc" id="L304">            final int offset = variableOffset(((VariableLhs)lhs).variable);</span>
+<span class="fc" id="L305">            add(new Addi(destination, MIPSRegister.SP, offset));</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        }else if (lhs instanceof DereferenceLhs) {</span>
+<span class="fc" id="L307">            final DereferenceLhs asDeref = (DereferenceLhs)lhs;</span>
+<span class="fc" id="L308">            putLhsAddressIntoRegister(destination, asDeref.lhs);</span>
+<span class="fc" id="L309">            add(new Lw(destination, 0, destination));</span>
+<span class="fc" id="L310">        } else {</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">            assert(false);</span>
+        }
+<span class="fc" id="L313">    }</span>
+
+    public int lhsSize(final Lhs lhs) {
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        if (lhs instanceof VariableLhs) {</span>
+<span class="fc" id="L317">            return variables.variableSize(((VariableLhs)lhs).variable);</span>
+<span class="pc bpc" id="L318" title="1 of 2 branches missed.">        } else if (lhs instanceof DereferenceLhs) {</span>
+<span class="fc" id="L319">            final DereferenceLhs asDereference = (DereferenceLhs)lhs;</span>
+<span class="fc" id="L320">            return sizeof(asDereference.getTypeAfterDereference());</span>
+        } else {
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            assert(false);</span>
+<span class="nc" id="L323">            return 0;</span>
+        }
+    }
+    
+    public void compileAssignmentStmt(final AssignmentStmt stmt) {        
+        // determine new value
+<span class="fc" id="L329">        compileExpression(stmt.exp);</span>
+
+        // establish where we're going to copy
+<span class="fc" id="L332">        final int size = lhsSize(stmt.lhs);</span>
+<span class="pc bpc" id="L333" title="2 of 4 branches missed.">        assert(size % 4 == 0);</span>
+<span class="fc" id="L334">        final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L335">        putLhsAddressIntoRegister(t0, stmt.lhs);</span>
+<span class="fc" id="L336">        resetExpressionOffset();</span>
+
+        // copy this value into the variable
+<span class="fc" id="L339">        final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        for (int base = 0; base &lt; size; base += 4) {</span>
+<span class="fc" id="L341">            final MIPSRegister t1 = MIPSRegister.T1;</span>
+<span class="fc" id="L342">            add(new Lw(t1, base, sp));</span>
+<span class="fc" id="L343">            add(new Sw(t1, base, t0));</span>
+        }
+
+<span class="fc" id="L346">        add(new Addi(sp, sp, size));</span>
+<span class="fc" id="L347">    }</span>
+
+    public void printA0() {
+<span class="fc" id="L350">        add(new Li(MIPSRegister.V0, 1));</span>
+<span class="fc" id="L351">        add(new Syscall());</span>
+
+        // print a newline
+<span class="fc" id="L354">        add(new Li(MIPSRegister.V0, 4));</span>
+<span class="fc" id="L355">        add(new La(MIPSRegister.A0, &quot;newline&quot;));</span>
+<span class="fc" id="L356">        add(new Syscall());</span>
+<span class="fc" id="L357">    }</span>
+    
+    public void compilePrintStmt(final PrintStmt stmt) {
+<span class="fc" id="L360">        compileExpression(stmt.exp);</span>
+<span class="pc bpc" id="L361" title="2 of 4 branches missed.">        assert(expressionOffset == 4);</span>
+<span class="fc" id="L362">        pop(MIPSRegister.A0);</span>
+<span class="fc" id="L363">        printA0();</span>
+<span class="fc" id="L364">    }</span>
+
+    public void compileReturnExpStmt(final ReturnExpStmt stmt) {
+<span class="fc" id="L367">        compileExpression(stmt.exp);</span>
+<span class="fc" id="L368">        doReturn();</span>
+<span class="fc" id="L369">        resetExpressionOffset();</span>
+<span class="fc" id="L370">    }</span>
+
+    public void compileReturnVoidStmt(final ReturnVoidStmt stmt) {
+<span class="nc bnc" id="L373" title="All 4 branches missed.">        assert(expressionOffset == 0);</span>
+<span class="nc" id="L374">        doReturn();</span>
+<span class="nc bnc" id="L375" title="All 4 branches missed.">        assert(expressionOffset == 0);</span>
+<span class="nc" id="L376">    }</span>
+
+    public void compileWhileStmt(final WhileStmt stmt) {
+        // save old start and end, as nested while is possible
+<span class="fc" id="L380">        final MIPSLabel oldWhileStart = currentWhileStart;</span>
+<span class="fc" id="L381">        final MIPSLabel oldWhileEnd = currentWhileEnd;</span>
+<span class="fc" id="L382">        currentWhileStart = freshWhileLabel(&quot;start&quot;);</span>
+<span class="fc" id="L383">        currentWhileEnd = freshWhileLabel(&quot;end&quot;);</span>
+
+<span class="fc" id="L385">        add(currentWhileStart);</span>
+<span class="fc" id="L386">        compileExpression(stmt.guard);</span>
+
+        // Guaranteed that guard is a boolean, from the typechecker.
+        // Put it in t0.
+<span class="pc bpc" id="L390" title="2 of 4 branches missed.">        assert(expressionOffset == 4);</span>
+<span class="fc" id="L391">        final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L392">        pop(t0);</span>
+
+        // If the guard is false, go to the end.  Otherwise, fall
+        // through to body.
+<span class="fc" id="L396">        add(new Beq(t0, MIPSRegister.ZERO, currentWhileEnd));</span>
+
+<span class="fc" id="L398">        compileStatementInNestedScope(true, stmt.body);</span>
+<span class="fc" id="L399">        add(new J(currentWhileStart));</span>
+<span class="fc" id="L400">        add(currentWhileEnd);</span>
+
+        // restore old start and end
+<span class="fc" id="L403">        currentWhileStart = oldWhileStart;</span>
+<span class="fc" id="L404">        currentWhileEnd = oldWhileEnd;</span>
+<span class="fc" id="L405">    }</span>
+
+    public void compileBreakStmt(final BreakStmt stmt) {
+<span class="pc bpc" id="L408" title="2 of 4 branches missed.">        assert(currentWhileStart != null);</span>
+<span class="pc bpc" id="L409" title="2 of 4 branches missed.">        assert(currentWhileEnd != null);</span>
+<span class="pc bpc" id="L410" title="2 of 4 branches missed.">        assert(currentWhileReset != null);</span>
+<span class="fc" id="L411">        freeSizeForVariables(variables.sizeAllocatedSinceResetPoint(currentWhileReset));</span>
+<span class="fc" id="L412">        add(new J(currentWhileEnd));</span>
+<span class="fc" id="L413">    }</span>
+
+    public void compileStatement(final Stmt stmt) {
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        if (stmt instanceof VariableDeclarationInitializationStmt) {</span>
+<span class="fc" id="L417">            compileVariableDeclarationInitializationStmt((VariableDeclarationInitializationStmt)stmt);</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        } else if (stmt instanceof AssignmentStmt) {</span>
+<span class="fc" id="L419">            compileAssignmentStmt((AssignmentStmt)stmt);</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">        } else if (stmt instanceof SequenceStmt) {</span>
+<span class="fc" id="L421">            compileSequenceStmt((SequenceStmt)stmt);</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">        } else if (stmt instanceof PrintStmt) {</span>
+<span class="fc" id="L423">            compilePrintStmt((PrintStmt)stmt);</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">        } else if (stmt instanceof ReturnExpStmt) {</span>
+<span class="fc" id="L425">            compileReturnExpStmt((ReturnExpStmt)stmt);</span>
+<span class="pc bpc" id="L426" title="1 of 2 branches missed.">        } else if (stmt instanceof ReturnVoidStmt) {</span>
+<span class="nc" id="L427">            compileReturnVoidStmt((ReturnVoidStmt)stmt);</span>
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">        } else if (stmt instanceof FunctionCallStmt) {</span>
+<span class="nc" id="L429">            compileFunctionCallStmt((FunctionCallStmt)stmt);</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">        } else if (stmt instanceof IfStmt) {</span>
+<span class="fc" id="L431">            compileIfStmt((IfStmt)stmt);</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        } else if (stmt instanceof WhileStmt) {</span>
+<span class="fc" id="L433">            compileWhileStmt((WhileStmt)stmt);</span>
+<span class="pc bpc" id="L434" title="1 of 2 branches missed.">        } else if (stmt instanceof BreakStmt) {</span>
+<span class="fc" id="L435">            compileBreakStmt((BreakStmt)stmt);</span>
+        }else {
+<span class="nc bnc" id="L437" title="All 2 branches missed.">            assert(false);</span>
+        }
+<span class="fc" id="L439">    }</span>
+    
+    // for simplicity, bools and chars are 4 bytes
+    public int sizeof(final Type type) {
+<span class="fc bfc" id="L443" title="All 2 branches covered.">        if (type instanceof VoidType) {</span>
+<span class="fc" id="L444">            return 0;</span>
+<span class="pc bpc" id="L445" title="1 of 6 branches missed.">        } else if (type instanceof IntType ||</span>
+                   type instanceof BoolType ||
+                   type instanceof PointerType) { // 32-bit word
+<span class="fc" id="L448">            return 4;</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">        } else if (type instanceof StructureType) {</span>
+<span class="nc" id="L450">            final LinkedHashMap&lt;FieldName, Type&gt; fields =</span>
+<span class="nc" id="L451">                structDecs.get(((StructureType)type).name);</span>
+<span class="nc" id="L452">            int sum = 0;</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">            for (final Type fieldType : fields.values()) {</span>
+<span class="nc" id="L454">                sum += sizeof(fieldType);</span>
+<span class="nc" id="L455">            }</span>
+<span class="nc bnc" id="L456" title="All 4 branches missed.">            assert(sum &gt;= 0);</span>
+<span class="nc bnc" id="L457" title="All 4 branches missed.">            assert(sum % 4 == 0);</span>
+<span class="nc" id="L458">            return sum;</span>
+        } else {
+<span class="nc bnc" id="L460" title="All 2 branches missed.">            assert(false);</span>
+<span class="nc" id="L461">            return 0;</span>
+        }
+    } // sizeof
+
+    public void add(final MIPSEntry i) {
+<span class="fc" id="L466">        entries.add(i);</span>
+<span class="fc" id="L467">    } // add</span>
+
+    // pushes the contents of this register onto the stack
+    public void push(final MIPSRegister register) {
+        // addi $sp, $sp, -4
+        // sw register, 0($sp)
+<span class="fc" id="L473">        final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="fc" id="L474">        add(new Addi(sp, sp, -4));</span>
+<span class="fc" id="L475">        add(new Sw(register, 0, sp));</span>
+<span class="fc" id="L476">        expressionOffset += 4;</span>
+<span class="fc" id="L477">    } // push</span>
+
+    // uses $t0 as a temp
+    public void pushValue(final int value) {
+<span class="fc" id="L481">        pushValue(MIPSRegister.T0, value);</span>
+<span class="fc" id="L482">    } // pushValue</span>
+    
+    public void pushValue(final MIPSRegister temp, final int value) {
+<span class="fc" id="L485">        add(new Li(temp, value));</span>
+<span class="fc" id="L486">        push(temp);</span>
+<span class="fc" id="L487">    } // pushValue</span>
+    
+    // pops top element of the stack into this register
+    public void pop(final MIPSRegister register) {
+        // lw register, 0($sp)
+        // addi $sp, $sp, 4
+<span class="fc" id="L493">        final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="fc" id="L494">        add(new Lw(register, 0, sp));</span>
+<span class="fc" id="L495">        add(new Addi(sp, sp, 4));</span>
+<span class="fc" id="L496">        expressionOffset -= 4;</span>
+<span class="fc" id="L497">    } // pop</span>
+    
+    public void compileIntExp(final IntExp exp) {
+        // push this integer onto the stack
+<span class="fc" id="L501">        pushValue(exp.value);</span>
+<span class="fc" id="L502">    } // compileIntExp</span>
+
+    // boolean: integer that's 0 (false), or 1 (true)
+    public void compileBoolExp(final BoolExp exp) {
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        pushValue((exp.value) ? 1 : 0);</span>
+<span class="fc" id="L507">    } // compileBoolExp</span>
+
+    // char: integer in the range for a char
+    
+    public void compileSizeofExp(final SizeofExp exp) {
+<span class="fc" id="L512">        pushValue(sizeof(exp.type));</span>
+<span class="fc" id="L513">    } // compileSizeof</span>
+
+    
+    // This language just passes it along and blindly assumes
+    // Depending, on the language, this might do something more
+    // clever, like:
+    // - Do some conversion (e.g., double -&gt; int)
+    // - Emit code that checks at runtime that the type makes sense
+    //
+    
+    public void compileDereferenceExp(final DereferenceExp exp) {
+        // since structures have differing size, this can push multiple values
+        // on the stack.  Additionally, we need to know what the type of the
+        // expression is (thanks typechecker!), which will tell us how much
+        // to load in
+<span class="fc" id="L528">        final int loadSize = sizeof(exp.getTypeAfterDereference());</span>
+
+        // memory address is on top of stack
+<span class="fc" id="L531">        compileExpression(exp.exp);</span>
+
+        // this address is now in $t0
+<span class="fc" id="L534">        final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L535">        pop(t0);</span>
+
+        // Allocate space on the stack for everything.
+<span class="fc" id="L538">        final MIPSRegister sp = MIPSRegister.SP;        </span>
+<span class="fc" id="L539">        add(new Addi(sp, sp, -loadSize));</span>
+
+        // load in from this address, one word at a time.
+        // $t1 is used to read in / write out words.
+        // first value of structure will be at offset N, next at N - 4, ... until 0
+<span class="fc" id="L544">        final MIPSRegister t1 = MIPSRegister.T1;</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">        for (int offset = loadSize - 4; offset &gt;= 0; offset -= 4) {</span>
+<span class="fc" id="L546">            add(new Lw(t1, offset, t0));</span>
+<span class="fc" id="L547">            add(new Sw(t1, offset, sp));</span>
+        }
+
+<span class="fc" id="L550">        expressionOffset += loadSize;</span>
+<span class="fc" id="L551">    } // compileDereferenceExp</span>
+    
+    
+
+    public List&lt;Map.Entry&lt;FieldName, Type&gt;&gt; reverseFieldsFor(final StructureName structName) {
+<span class="nc" id="L556">        final LinkedHashMap&lt;FieldName, Type&gt; fields = structDecs.get(structName);</span>
+<span class="nc bnc" id="L557" title="All 4 branches missed.">        assert(fields != null);</span>
+
+<span class="nc" id="L559">        final List&lt;Map.Entry&lt;FieldName, Type&gt;&gt; asList =</span>
+<span class="nc" id="L560">            new ArrayList&lt;Map.Entry&lt;FieldName, Type&gt;&gt;(fields.entrySet());</span>
+<span class="nc" id="L561">        Collections.reverse(asList);</span>
+<span class="nc" id="L562">        return asList;</span>
+    }
+    
+    public int fieldOffset(final StructureName structureName,
+                           final FieldName fieldName) {
+<span class="nc" id="L567">        int offset = 0;</span>
+        // last value has offset zero
+<span class="nc bnc" id="L569" title="All 2 branches missed.">        for (final Map.Entry&lt;FieldName, Type&gt; entry : reverseFieldsFor(structureName)) {</span>
+<span class="nc bnc" id="L570" title="All 2 branches missed.">            if (entry.getKey().equals(fieldName)) {</span>
+<span class="nc" id="L571">                return offset;</span>
+            }
+<span class="nc" id="L573">            offset += sizeof(entry.getValue());</span>
+<span class="nc" id="L574">        }</span>
+
+<span class="nc bnc" id="L576" title="All 2 branches missed.">        assert(false);</span>
+<span class="nc" id="L577">        return 0;</span>
+    } // fieldOffset
+            
+           
+    public void compileOp(final MIPSRegister destination,
+                          final MIPSRegister left,
+                          final Op op,
+                          final MIPSRegister right) {
+<span class="fc bfc" id="L585" title="All 2 branches covered.">        if (op instanceof PlusOp) {</span>
+<span class="fc" id="L586">            add(new Add(destination, left, right));</span>
+<span class="fc bfc" id="L587" title="All 2 branches covered.">        } else if (op instanceof MinusOp) {</span>
+<span class="fc" id="L588">            add(new Sub(destination, left, right));</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">        } else if (op instanceof EqualsOp) {</span>
+<span class="fc" id="L590">            add(new Seq(destination, left, right));</span>
+<span class="pc bpc" id="L591" title="1 of 2 branches missed.">        } else if (op instanceof LessThanOp) {</span>
+<span class="fc" id="L592">            add(new Slt(destination, left, right));</span>
+        } else {
+<span class="nc bnc" id="L594" title="All 2 branches missed.">            assert(false);</span>
+        }
+<span class="fc" id="L596">    } // compileOp</span>
+    
+    // compile left, which pushes onto stack
+    // compile right, which pushed onto stack
+    // pop both, do the operation, then push result onto stack
+    public void compileBinopExp(final BinopExp exp) {
+<span class="fc" id="L602">        compileExpression(exp.left);</span>
+<span class="fc" id="L603">        compileExpression(exp.right);</span>
+<span class="fc" id="L604">        final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L605">        final MIPSRegister t1 = MIPSRegister.T1;</span>
+<span class="fc" id="L606">        pop(t1); // right is on top of the stack...</span>
+<span class="fc" id="L607">        pop(t0); // followed by left</span>
+<span class="fc" id="L608">        compileOp(t0, t0, exp.op, t1);</span>
+<span class="fc" id="L609">        push(t0);</span>
+<span class="fc" id="L610">    } // compileBinopExp</span>
+
+    public void compileVariableExp(final VariableExp exp) {
+        // copy variable's value to top of stack
+<span class="fc" id="L614">        final int size = variables.variableSize(exp.variable);</span>
+<span class="pc bpc" id="L615" title="2 of 4 branches missed.">        assert(size % 4 == 0);</span>
+<span class="fc" id="L616">        final int copyFromOffset = variableOffset(exp.variable);</span>
+        
+<span class="fc" id="L618">        final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="fc bfc" id="L619" title="All 2 branches covered.">        for (int base = 0; base &lt; size; base += 4) {</span>
+<span class="fc" id="L620">            final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L621">            add(new Lw(t0, copyFromOffset + base, sp));</span>
+<span class="fc" id="L622">            add(new Sw(t0, -(size - base), sp));</span>
+        }
+<span class="fc" id="L624">        add(new Addi(sp, sp, -size));</span>
+<span class="fc" id="L625">        expressionOffset += size;</span>
+<span class="fc" id="L626">    }</span>
+
+    public void compileAddressOfExp(final AddressOfExp exp) {
+<span class="fc" id="L629">        final MIPSRegister t0 = MIPSRegister.T0;</span>
+<span class="fc" id="L630">        putLhsAddressIntoRegister(t0, exp.lhs);</span>
+<span class="fc" id="L631">        push(t0);</span>
+<span class="fc" id="L632">    }</span>
+
+    public static MIPSLabel functionNameToLabel(final FunctionName name) {
+<span class="fc" id="L635">        return new MIPSLabel(name.name, 0);</span>
+    }
+    
+    // TODO: this does not conform to the typical MIPS calling convention;
+    // it puts all arguments on the stack, and returns on the stack, ignoring
+    // the $a* and $v* registers
+    public void compileFunctionCallExp(final FunctionCallExp exp) {
+<span class="fc" id="L642">        final int originalExpressionOffset = expressionOffset;</span>
+
+        // last argument will be on top of the stack
+<span class="fc bfc" id="L645" title="All 2 branches covered.">        for (final Exp parameter : exp.parameters) {</span>
+<span class="fc" id="L646">            compileExpression(parameter);</span>
+        }
+
+<span class="fc" id="L649">        add(new Jal(functionNameToLabel(exp.name)));</span>
+
+        // return value is on stack
+<span class="fc" id="L652">        final int returnTypeSize = sizeof(functionDefs.get(exp.name).returnType);</span>
+<span class="fc" id="L653">        expressionOffset = originalExpressionOffset + returnTypeSize;</span>
+<span class="fc" id="L654">    }</span>
+
+    public void compileFunctionCallStmt(final FunctionCallStmt stmt) {
+<span class="nc" id="L657">        final FunctionCallExp exp = stmt.asExp;</span>
+<span class="nc" id="L658">        final int returnTypeSize = sizeof(functionDefs.get(exp.name).returnType);</span>
+<span class="nc" id="L659">        compileFunctionCallExp(exp);</span>
+        // ignore what's on the stack
+<span class="nc" id="L661">        final MIPSRegister sp = MIPSRegister.SP;</span>
+<span class="nc" id="L662">        add(new Addi(sp, sp, returnTypeSize));</span>
+<span class="nc" id="L663">        expressionOffset -= returnTypeSize;</span>
+<span class="nc bnc" id="L664" title="All 4 branches missed.">        assert(expressionOffset &gt;= 0);</span>
+<span class="nc" id="L665">    }</span>
+    
+    public void compileExpression(final Exp exp) {
+<span class="fc bfc" id="L668" title="All 2 branches covered.">        if (exp instanceof IntExp) {</span>
+<span class="fc" id="L669">            compileIntExp((IntExp)exp);</span>
+<span class="fc bfc" id="L670" title="All 2 branches covered.">        } else if (exp instanceof BoolExp) {</span>
+<span class="fc" id="L671">            compileBoolExp((BoolExp)exp);</span>
+<span class="fc bfc" id="L672" title="All 2 branches covered.">        } else if (exp instanceof BinopExp) {</span>
+<span class="fc" id="L673">            compileBinopExp((BinopExp)exp);</span>
+<span class="fc bfc" id="L674" title="All 2 branches covered.">        } else if (exp instanceof VariableExp) {</span>
+<span class="fc" id="L675">            compileVariableExp((VariableExp)exp);</span>
+<span class="fc bfc" id="L676" title="All 2 branches covered.">        } else if (exp instanceof SizeofExp) {</span>
+<span class="fc" id="L677">            compileSizeofExp((SizeofExp)exp);</span>
+<span class="fc bfc" id="L678" title="All 2 branches covered.">        } else if (exp instanceof DereferenceExp) {</span>
+<span class="fc" id="L679">            compileDereferenceExp((DereferenceExp)exp);</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">        } else if (exp instanceof AddressOfExp) {</span>
+<span class="fc" id="L681">            compileAddressOfExp((AddressOfExp)exp);</span>
+<span class="pc bpc" id="L682" title="1 of 2 branches missed.">        }else if (exp instanceof FunctionCallExp) {</span>
+<span class="fc" id="L683">            compileFunctionCallExp((FunctionCallExp)exp);</span>
+        } else {
+<span class="nc bnc" id="L685" title="All 2 branches missed.">            assert(false);</span>
+        }
+<span class="fc" id="L687">    } // compileExpression</span>
+
+    public MIPSEntry[] getEntries() {
+<span class="nc" id="L690">        return entries.toArray(new MIPSInstruction[entries.size()]);</span>
+    } // getInstructions
+
+    private void mainEnd() {
+        // exit
+<span class="fc" id="L695">        add(new Li(MIPSRegister.V0, 10));</span>
+<span class="fc" id="L696">        add(new Syscall());</span>
+<span class="fc" id="L697">    } // mainEnd</span>
+    
+    public void writeCompleteFile(final File file) throws IOException {
+<span class="fc" id="L700">        final PrintWriter output =</span>
+            new PrintWriter(new BufferedWriter(new FileWriter(file)));
+<span class="fc" id="L702">        mainEnd();</span>
+        try {
+<span class="fc" id="L704">            output.println(&quot;.data&quot;);</span>
+<span class="fc" id="L705">            output.println(&quot;newline:&quot;);</span>
+<span class="fc" id="L706">            output.println(MIPSInstruction.INDENT + &quot;.asciiz \&quot;\\n\&quot;&quot;);</span>
+<span class="fc" id="L707">            output.println(&quot;.text&quot;);</span>
+<span class="fc" id="L708">            output.println(&quot;main:&quot;);</span>
+<span class="fc bfc" id="L709" title="All 2 branches covered.">            for (final MIPSEntry entry : entries) {</span>
+<span class="fc" id="L710">                output.println(entry.toString());</span>
+<span class="fc" id="L711">            }</span>
+        } finally {
+<span class="fc" id="L713">            output.close();</span>
+        }
+<span class="fc" id="L715">    } // writeCompleteFile</span>
+
+    // exclusively used in the test suite
+    public void setCurrentFunctionForTesting(final FunctionName currentFunction) {
+<span class="pc bpc" id="L719" title="2 of 4 branches missed.">        assert(this.currentFunction == null);</span>
+<span class="fc" id="L720">        this.currentFunction = currentFunction;</span>
+<span class="fc" id="L721">    } // setCurrentFunctionForTesting</span>
+} // MIPSCodeGenerator
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
